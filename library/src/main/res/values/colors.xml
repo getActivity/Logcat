@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="logcat_window_background_color">#FF3C3F41</color>
+    <color name="logcat_item_background_color">#FF2B2B2B</color>
+    <color name="logcat_scrollbar_thumb_color">#FFFFFFFF</color>
+
+    <color name="logcat_level_verbose_color">#FFBBBBBB</color>
+    <color name="logcat_level_debug_color">#FF33B5E5</color>
+    <color name="logcat_level_info_color">#FF99CC00</color>
+    <color name="logcat_level_warn_color">#FFFFBB33</color>
+    <color name="logcat_level_error_color">#FFFF4444</color>
+    <color name="logcat_level_other_color">#FFFFFFFF</color>
+
+</resources>

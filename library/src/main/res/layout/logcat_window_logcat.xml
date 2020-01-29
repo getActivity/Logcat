@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_log_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/logcat_window_background_color"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
+
+        <CheckBox
+            android:id="@+id/iv_log_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:button="@drawable/logcat_bg_log_check"
+            android:checked="false" />
+
+        <TextView
+            android:id="@+id/tv_log_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/logcat_bg_log_frame"
+            android:drawableLeft="@drawable/logcat_ic_filter"
+            android:drawablePadding="10dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="8dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="8dp"
+            android:text="Verbose"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/et_log_search"
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/logcat_bg_log_frame"
+            android:cursorVisible="true"
+            android:drawableLeft="@drawable/logcat_ic_search"
+            android:drawablePadding="15dp"
+            android:hint="请输入要查找的内容"
+            android:imeOptions="actionSearch"
+            android:inputType="textCapCharacters"
+            android:paddingLeft="15dp"
+            android:paddingTop="8dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="8dp"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            android:textCursorDrawable="@null"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/iv_log_clean"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/logcat_ic_clear" />
+
+        <ImageView
+            android:id="@+id/iv_log_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/logcat_ic_close" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lv_log_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#2b2b2b"
+        android:dividerHeight="0px"
+        android:scrollbarThumbVertical="@color/logcat_scrollbar_thumb_color"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/logcat_item_logcat" />
+
+</LinearLayout>
