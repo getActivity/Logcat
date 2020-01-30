@@ -89,8 +89,11 @@
         android:layout_height="match_parent"
         android:background="#2b2b2b"
         android:dividerHeight="0px"
+        android:fadeScrollbars="true"
+        android:scrollbarSize="1dp"
         android:scrollbarThumbVertical="@color/logcat_scrollbar_thumb_color"
         android:scrollbars="vertical"
+        android:verticalScrollbarPosition="left"
         tools:listitem="@layout/logcat_item_logcat" />
 
 </LinearLayout>

@@ -29,6 +29,7 @@ public final class InitActivity extends Activity
 
     @Override
     public void hasPermission(List<String> granted, boolean all) {
+        LogcatConfig.init(getApplication());
         FloatingLifecycle.with(getApplication(), new FloatingWindow(getApplication()).show());
         finish();
     }

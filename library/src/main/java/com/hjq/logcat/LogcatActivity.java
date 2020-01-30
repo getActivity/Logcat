@@ -70,7 +70,7 @@ public final class LogcatActivity extends Activity
         mSwitchView.setOnCheckedChangeListener(this);
         mSearchView.addTextChangedListener(this);
 
-        mSearchView.setText(LogcatConfig.getLogcatKeyword());
+        mSearchView.setText(LogcatConfig.getLogcatText());
         setLogLevel(LogcatConfig.getLogcatLevel());
 
         mLevelView.setOnClickListener(this);
@@ -209,7 +209,7 @@ public final class LogcatActivity extends Activity
     @Override
     public void afterTextChanged(Editable s) {
         String keyword = s.toString().trim();
-        LogcatConfig.setLogcatKeyword(keyword);
+        LogcatConfig.setLogcatText(keyword);
         mAdapter.setKeyword(keyword);
         mAdapter.clearData();
         for (LogcatInfo info : mLogData) {

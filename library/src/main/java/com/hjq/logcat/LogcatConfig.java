@@ -1,5 +1,6 @@
 package com.hjq.logcat;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -16,8 +17,8 @@ final class LogcatConfig {
     /**
      * 初始化
      */
-    static void init(Context context) {
-        sConfig = context.getSharedPreferences("logcat", Context.MODE_PRIVATE);
+    static void init(Application application) {
+        sConfig = application.getSharedPreferences("logcat", Context.MODE_PRIVATE);
     }
 
     /**
@@ -36,13 +37,13 @@ final class LogcatConfig {
     /**
      * 搜索关键字
      */
-    private static final String LOGCAT_KEYWORD = "logcat_keyword";
+    private static final String LOGCAT_TEXT = "logcat_text";
 
-    static String getLogcatKeyword() {
-        return sConfig.getString(LOGCAT_KEYWORD, "");
+    static String getLogcatText() {
+        return sConfig.getString(LOGCAT_TEXT, "");
     }
 
-    static void setLogcatKeyword(String keyword) {
-        sConfig.edit().putString(LOGCAT_KEYWORD, keyword).apply();
+    static void setLogcatText(String keyword) {
+        sConfig.edit().putString(LOGCAT_TEXT, keyword).apply();
     }
 }

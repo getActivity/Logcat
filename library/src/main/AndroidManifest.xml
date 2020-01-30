@@ -14,11 +14,9 @@
 
         <activity
             android:name=".InitActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="true"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTop"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <activity
             android:name=".LogcatActivity"

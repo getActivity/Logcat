@@ -7,8 +7,12 @@
 #### 集成步骤
 
     dependencies {
-        debugImplementation 'com.hjq:logcat:3.0'
+        debugImplementation 'com.hjq:logcat:3.2'
     }
+
+#### 使用方式
+
+* 在 debug 模式下运行即可，在 release 正式打包的时不会自动集成
 
 #### 截图欣赏
 
@@ -24,17 +28,32 @@
 
 ![](picture/6.jpg)
 
+![](picture/7.jpg)
+
+#### 日志颜色个性化
+
+> 在项目的 `values/color.xml` 中加入你喜欢的配色，例如
+
+    <color name="logcat_level_verbose_color">#FFBBBBBB</color>
+    <color name="logcat_level_debug_color">#FF33B5E5</color>
+    <color name="logcat_level_info_color">#FF99CC00</color>
+    <color name="logcat_level_warn_color">#FFFFBB33</color>
+    <color name="logcat_level_error_color">#FFFF4444</color>
+    <color name="logcat_level_other_color">#FFFFFFFF</color>
+
 #### 框架亮点
 
-* 支持日志捕捉开关功能
+* 只需集成，无需调用
 
-* 支持日志内容拼接功能
+* 日志长按可复制分享
 
-* 支持日志内容收缩展开
+* 长日志点击可收缩展开显示
 
-* 支持日志复制分享功能
+* 日志搜索结果支持文本高亮
 
-* 支持日志搜索文本高亮
+* 多个相同 TAG 日志自动合并显示
+
+* 仅在 Debug 下集成，无需手动初始化
 
 #### 作者的其他开源项目
 
