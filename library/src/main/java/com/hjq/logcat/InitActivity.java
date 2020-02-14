@@ -29,14 +29,13 @@ public final class InitActivity extends Activity
 
     @Override
     public void hasPermission(List<String> granted, boolean all) {
-        LogcatConfig.init(getApplication());
         FloatingLifecycle.with(getApplication(), new FloatingWindow(getApplication()).show());
         finish();
     }
 
     @Override
     public void noPermission(List<String> denied, boolean quick) {
-        Toast.makeText(getApplicationContext(), "权限申请失败，无法显示弹窗", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "权限申请失败，无法显示 Logcat", Toast.LENGTH_LONG).show();
         finish();
     }
 }

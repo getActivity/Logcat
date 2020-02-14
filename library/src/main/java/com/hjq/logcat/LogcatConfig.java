@@ -1,6 +1,5 @@
 package com.hjq.logcat;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -17,8 +16,21 @@ final class LogcatConfig {
     /**
      * 初始化
      */
-    static void init(Application application) {
-        sConfig = application.getSharedPreferences("logcat", Context.MODE_PRIVATE);
+    static void init(Context context) {
+        sConfig = context.getSharedPreferences("logcat", Context.MODE_PRIVATE);
+    }
+
+    /**
+     * 申请权限次数
+     */
+    private static final String PERMISSIONS_COUNT = "permissions_count";
+
+    static int getPermissionsCount() {
+        return sConfig.getInt(PERMISSIONS_COUNT, 0);
+    }
+
+    static void setPermissionsCount(int count) {
+        sConfig.edit().putInt(PERMISSIONS_COUNT, count).apply();
     }
 
     /**

@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
  */
 final class LogcatInfo {
 
+    private static final String LINE_SPACE = "\n    ";
+
     private static final Pattern PATTERN = Pattern.compile(
             "([0-9^-]+-[0-9^ ]+ [0-9^:]+:[0-9^:]+\\.[0-9]+) +([0-9]+) +([0-9]+) ([VDIWEF]) ([^ ]*) *: (.*)");
 
@@ -22,13 +24,13 @@ final class LogcatInfo {
     }};
 
     /** 时间 */
-    private String time;
+    private String mTime;
     /** 等级 */
-    private String level;
+    private String mLevel;
     /** 标记 */
-    private String tag;
+    private String mTag;
     /** 内容 */
-    private String log;
+    private String mLog;
 
     LogcatInfo(String line) {
         Matcher matcher = PATTERN.matcher(line);
@@ -36,29 +38,34 @@ final class LogcatInfo {
             throw new IllegalStateException("logcat pattern not match: " + line);
         }
 
-        time = matcher.group(1);
-        level = matcher.group(4);
-        tag = matcher.group(5);
-        log = matcher.group(6);
+        mTime = matcher.group(1);
+        mLevel = matcher.group(4);
+        mTag = matcher.group(5);
+        mLog = matcher.group(6);
     }
 
     String getTime() {
-        return time;
+        return mTime;
     }
 
     String getLevel() {
-        return level;
+        return mLevel;
     }
 
     String getTag() {
-        return tag;
+        return mTag;
     }
 
     String getLog() {
-        return log;
+        return mLog;
     }
 
     void addLog(String text) {
-        log = (log.startsWith("\n\t\t\t\t") ? "" : "\n\t\t\t\t") + log + "\n\t\t\t\t" + text;
+        mLog = (mLog.startsWith(LINE_SPACE) ? "" : LINE_SPACE) + mLog + LINE_SPACE + text;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s   %s   %s", mTime, mTag, mLog);
     }
 }

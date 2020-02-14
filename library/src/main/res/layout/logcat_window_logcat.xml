@@ -24,6 +24,14 @@
             android:button="@drawable/logcat_bg_log_check"
             android:checked="false" />
 
+        <ImageView
+            android:id="@+id/iv_log_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/logcat_ic_save" />
+
         <TextView
             android:id="@+id/tv_log_level"
             android:layout_width="wrap_content"
@@ -31,6 +39,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/logcat_bg_log_frame"
+            android:drawableStart="@drawable/logcat_ic_filter"
             android:drawableLeft="@drawable/logcat_ic_filter"
             android:drawablePadding="10dp"
             android:paddingLeft="10dp"
@@ -41,29 +50,51 @@
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
-        <EditText
-            android:id="@+id/et_log_search"
+        <FrameLayout
             android:layout_width="0px"
             android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1"
-            android:background="@drawable/logcat_bg_log_frame"
-            android:cursorVisible="true"
-            android:drawableLeft="@drawable/logcat_ic_search"
-            android:drawablePadding="15dp"
-            android:hint="请输入要查找的内容"
-            android:imeOptions="actionSearch"
-            android:inputType="textCapCharacters"
-            android:paddingLeft="15dp"
-            android:paddingTop="8dp"
-            android:paddingRight="15dp"
-            android:paddingBottom="8dp"
-            android:singleLine="true"
-            android:textColor="@android:color/white"
-            android:textColorHint="@android:color/white"
-            android:textCursorDrawable="@null"
-            android:textSize="14sp" />
+            android:layout_weight="1">
+
+            <EditText
+                android:id="@+id/et_log_search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/logcat_bg_log_frame"
+                android:cursorVisible="true"
+                android:drawableStart="@drawable/logcat_ic_search"
+                android:drawableLeft="@drawable/logcat_ic_search"
+                android:drawablePadding="15dp"
+                android:hint="请输入要查找的内容"
+                android:imeOptions="actionSearch"
+                android:inputType="textCapCharacters"
+                android:paddingStart="15dp"
+                android:paddingLeft="15dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="35dp"
+                android:paddingRight="35dp"
+                android:paddingBottom="8dp"
+                android:singleLine="true"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                android:textCursorDrawable="@null"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/iv_log_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/logcat_ic_empty"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </FrameLayout>
 
         <ImageView
             android:id="@+id/iv_log_clean"

@@ -21,7 +21,7 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/Logcat
  *    time   : 2020/01/24
- *    desc   :
+ *    desc   : 日志列表适配器
  */
 final class LogcatAdapter extends BaseAdapter {
 
@@ -73,6 +73,14 @@ final class LogcatAdapter extends BaseAdapter {
     }
 
     /**
+     * 删除某条数据
+     */
+    void removeItem(int position) {
+        mDataSet.remove(position);
+        notifyDataSetChanged();
+    }
+
+    /**
      * 清空当前数据
      */
     void clearData() {
@@ -105,15 +113,10 @@ final class LogcatAdapter extends BaseAdapter {
             mLineView = view.findViewById(R.id.v_log_line);
         }
 
-        private void onBindView(LogcatInfo bean, int position) {
-            String level = bean.getLevel();
-            String time = bean.getTime();
-            String tag = bean.getTag();
-            String log = bean.getLog();
-
-            String content = String.format("%s   %s   %s", time, tag, log);
+        private void onBindView(LogcatInfo info, int position) {
+            String content = info.toString();
             CharSequence text = content;
-            if (mKeyword.length() > 0) {
+            if (mKeyword != null && mKeyword.length() > 0) {
                 int index = content.indexOf(mKeyword);
                 if (index == -1) {
                     index = content.toLowerCase().indexOf(mKeyword.toLowerCase());
@@ -134,7 +137,7 @@ final class LogcatAdapter extends BaseAdapter {
             mContentView.setText(text);
 
             final int resourceId;
-            switch (level) {
+            switch (info.getLevel()) {
                 case "D":
                     resourceId = R.color.logcat_level_debug_color;
                     break;
@@ -165,22 +168,35 @@ final class LogcatAdapter extends BaseAdapter {
 
             if (mContentView.getLineCount() - MAX_LINE > 1) {
                 if (mExpandSet.get(position)) {
-                    mContentView.setMaxLines(Integer.MAX_VALUE);
-                    mExpandView.setImageResource(R.drawable.logcat_ic_arrows_up);
-                    mExpandView.setVisibility(View.VISIBLE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        if (mContentView.getMaxLines() != Integer.MAX_VALUE) {
+                            mContentView.setMaxLines(Integer.MAX_VALUE);
+                            mExpandView.setImageResource(R.drawable.logcat_ic_arrows_up);
+                        }
+                    } else {
+                        mContentView.setMaxLines(Integer.MAX_VALUE);
+                        mExpandView.setImageResource(R.drawable.logcat_ic_arrows_up);
+                    }
                 } else {
-                    mContentView.setMaxLines(MAX_LINE);
-                    mExpandView.setImageResource(R.drawable.logcat_ic_arrows_down);
-                    mExpandView.setVisibility(View.VISIBLE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        if (mContentView.getMaxLines() != MAX_LINE) {
+                            mContentView.setMaxLines(MAX_LINE);
+                            mExpandView.setImageResource(R.drawable.logcat_ic_arrows_down);
+                        }
+                    } else {
+                        mContentView.setMaxLines(MAX_LINE);
+                        mExpandView.setImageResource(R.drawable.logcat_ic_arrows_down);
+                    }
                 }
 
+                mExpandView.setVisibility(View.VISIBLE);
                 mIndexView.setVisibility(View.GONE);
             } else {
                 mContentView.setMaxLines(Integer.MAX_VALUE);
-                mExpandView.setVisibility(View.GONE);
-
-                mIndexView.setVisibility(View.VISIBLE);
                 mIndexView.setText(String.valueOf(position + 1));
+
+                mExpandView.setVisibility(View.GONE);
+                mIndexView.setVisibility(View.VISIBLE);
             }
         }
     }

@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -18,10 +19,22 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.hjq.permissions.OnPermission;
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 import com.hjq.xtoast.XToast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * author : Android 轮子哥
@@ -39,8 +52,10 @@ public final class LogcatActivity extends Activity
     private List<LogcatInfo> mLogData = new ArrayList<>();
 
     private CheckBox mSwitchView;
+    private View mSaveView;
     private TextView mLevelView;
     private EditText mSearchView;
+    private View mEmptyView;
     private View mCleanView;
     private View mCloseView;
     private ListView mListView;
@@ -57,8 +72,10 @@ public final class LogcatActivity extends Activity
         setContentView(R.layout.logcat_window_logcat);
 
         mSwitchView = findViewById(R.id.iv_log_switch);
+        mSaveView = findViewById(R.id.iv_log_save);
         mLevelView = findViewById(R.id.tv_log_level);
         mSearchView = findViewById(R.id.et_log_search);
+        mEmptyView = findViewById(R.id.iv_log_empty);
         mCleanView = findViewById(R.id.iv_log_clean);
         mCloseView = findViewById(R.id.iv_log_close);
         mListView = findViewById(R.id.lv_log_list);
@@ -73,18 +90,20 @@ public final class LogcatActivity extends Activity
         mSearchView.setText(LogcatConfig.getLogcatText());
         setLogLevel(LogcatConfig.getLogcatLevel());
 
+        mSaveView.setOnClickListener(this);
         mLevelView.setOnClickListener(this);
+        mEmptyView.setOnClickListener(this);
         mCleanView.setOnClickListener(this);
         mCloseView.setOnClickListener(this);
 
+        mSaveView.setOnLongClickListener(this);
         mSwitchView.setOnLongClickListener(this);
         mLevelView.setOnLongClickListener(this);
         mCleanView.setOnLongClickListener(this);
         mCloseView.setOnLongClickListener(this);
 
         // 开始捕获
-        LogcatManager.setListener(this);
-        LogcatManager.start();
+        LogcatManager.start(this);
 
         mListView.postDelayed(new Runnable() {
             @Override
@@ -95,8 +114,8 @@ public final class LogcatActivity extends Activity
     }
 
     @Override
-    public void onReceiveLog(String line) {
-        mListView.post(new LogRunnable(new LogcatInfo(line)));
+    public void onReceiveLog(LogcatInfo info) {
+        mListView.post(new LogRunnable(info));
     }
 
     @Override
@@ -107,7 +126,7 @@ public final class LogcatActivity extends Activity
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, final int location, long id) {
         new ChooseWindow(this)
-                .setList("复制日志", "分享日志")
+                .setList("复制日志", "分享日志", "删除日志")
                 .setListener(new ChooseWindow.OnListener() {
                     @Override
                     public void onSelected(int position) {
@@ -117,13 +136,19 @@ public final class LogcatActivity extends Activity
                                 if (manager != null) {
                                     manager.setPrimaryClip(ClipData.newPlainText("log", mAdapter.getItem(location).getLog()));
                                     toast("日志复制成功");
+                                } else {
+                                    toast("日志复制失败");
                                 }
                                 break;
                             case 1:
                                 Intent intent = new Intent(Intent.ACTION_SEND);
                                 intent.setType("text/plain");
                                 intent.putExtra(Intent.EXTRA_TEXT, mAdapter.getItem(location).getLog());
-                                startActivity(Intent.createChooser(intent, "分享文本"));
+                                startActivity(Intent.createChooser(intent, "分享日志"));
+                                break;
+                            case 2:
+                                mLogData.remove(mAdapter.getItem(location));
+                                mAdapter.removeItem(location);
                                 break;
                             default:
                                 break;
@@ -138,7 +163,9 @@ public final class LogcatActivity extends Activity
     public boolean onLongClick(View v) {
         if (v == mSwitchView) {
             toast("日志捕获开关");
-        } else if (v == mLevelView) {
+        } else if (v == mSaveView) {
+            toast("保存日志");
+        }else if (v == mLevelView) {
             toast("日志等级过滤");
         } else if (v == mCleanView) {
             toast("清空日志");
@@ -149,8 +176,20 @@ public final class LogcatActivity extends Activity
     }
 
     @Override
-    public void onClick(View view) {
-        if (view == mLevelView) {
+    public void onClick(View v) {
+        if (v == mSaveView) {
+            XXPermissions.with(this)
+                    .permission(Permission.Group.STORAGE)
+                    .request(new OnPermission() {
+                        @Override
+                        public void hasPermission(List<String> granted, boolean isAll) {
+                            saveLogToFile();
+                        }
+
+                        @Override
+                        public void noPermission(List<String> denied, boolean quick) {}
+                    });
+        } else if (v == mLevelView) {
             new ChooseWindow(this)
                     .setList(ARRAY_LOG_LEVEL)
                     .setListener(new ChooseWindow.OnListener() {
@@ -178,10 +217,12 @@ public final class LogcatActivity extends Activity
                         }
                     })
                     .show();
-        } else if (view == mCleanView) {
+        } else if (v == mEmptyView) {
+            mSearchView.setText("");
+        }else if (v == mCleanView) {
             LogcatManager.clear();
             mAdapter.clearData();
-        } else if (view == mCloseView) {
+        } else if (v == mCloseView) {
             onBackPressed();
         }
     }
@@ -190,9 +231,9 @@ public final class LogcatActivity extends Activity
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
             toast("日志捕捉已暂停");
-            LogcatManager.stop();
+            LogcatManager.pause();
         } else {
-            LogcatManager.start();
+            LogcatManager.resume();
         }
     }
 
@@ -224,6 +265,7 @@ public final class LogcatActivity extends Activity
             }
         }
         mListView.setSelection(mAdapter.getCount() - 1);
+        mEmptyView.setVisibility("".equals(keyword) ? View.GONE : View.VISIBLE);
     }
 
     private void setLogLevel(String level) {
@@ -285,6 +327,46 @@ public final class LogcatActivity extends Activity
                         mAdapter.addItem(info);
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * 保存日志到本地
+     */
+    private void saveLogToFile() {
+        BufferedWriter writer = null;
+        try {
+
+            File directory = new File(Environment.getExternalStorageDirectory(), "Logcat" + File.separator + getPackageName());
+            if (!directory.isDirectory()) {
+                directory.delete();
+            }
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            File file = new File(directory, new SimpleDateFormat("yyyyMMdd_kkmmss", Locale.getDefault()).format(new Date()) + ".txt");
+            if (!file.isFile()) {
+                file.delete();
+            }
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), Charset.forName("UTF-8")));
+            List<LogcatInfo> data = mAdapter.getData();
+            for (LogcatInfo info : data) {
+                writer.write(info.toString().replace("\n", "\r\n") + "\r\n\r\n");
+            }
+            writer.flush();
+
+            toast("保存成功：" + file.getPath());
+        } catch (IOException e) {
+            toast("保存失败");
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ignored) {}
             }
         }
     }

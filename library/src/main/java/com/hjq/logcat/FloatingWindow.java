@@ -21,7 +21,6 @@ final class FloatingWindow extends XToast implements OnClickListener {
         super(application);
         setView(R.layout.logcat_window_floating);
         setAnimStyle(android.R.style.Animation_Toast);
-        setAnimStyle(android.R.style.Animation_Translucent);
         setDraggable(new SpringDraggable());
         setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
         setOnClickListener(android.R.id.icon, this);

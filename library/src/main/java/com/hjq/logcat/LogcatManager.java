@@ -3,6 +3,8 @@ package com.hjq.logcat;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -13,68 +15,89 @@ import java.io.InputStreamReader;
  */
 final class LogcatManager {
 
-    private static Listener sListener;
-    private static boolean FLAG_WORK;
+    private static volatile Listener sListener;
+    /** 日志捕捉标记 */
+    private static volatile boolean FLAG_WORK;
+    /** 备用存放集合 */
+    private static final List<LogcatInfo> LOG_BACKUP = new ArrayList<>();
 
-    static void setListener(Listener listener) {
+    /**
+     * 开始捕捉
+     */
+    static void start(Listener listener) {
+        if (sListener == null) {
+            FLAG_WORK = true;
+            new Thread(new LogRunnable()).start();
+        }
         sListener = listener;
     }
 
-    static void start() {
-        if (!FLAG_WORK) {
-            FLAG_WORK = true;
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    BufferedReader reader = null;
-                    try {
-                        Process process = new ProcessBuilder("logcat", "-v", "threadtime").start();
-                        reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                        String line;
-                        while (FLAG_WORK && (line = reader.readLine()) != null) {
-                            if (LogcatInfo.IGNORED_LOG.contains(line)) {
-                                continue;
-                            }
-                            try {
-                                if (sListener != null) {
-                                    sListener.onReceiveLog(line);
-                                }
-                            } catch (NumberFormatException | IllegalStateException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        stop();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        stop();
-                    }
-                    if (reader != null) {
-                        try {
-                            reader.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }).start();
+    /**
+     * 继续捕捉
+     */
+    static void resume() {
+        FLAG_WORK = true;
+        if (sListener != null && !LOG_BACKUP.isEmpty()) {
+            for (LogcatInfo info : LOG_BACKUP) {
+                sListener.onReceiveLog(info);
+            }
         }
+        LOG_BACKUP.clear();
     }
 
-    static void stop() {
+    /**
+     * 暂停捕捉
+     */
+    static void pause() {
         FLAG_WORK = false;
     }
 
+    /**
+     * 清空日志
+     */
     static void clear() {
         try {
             new ProcessBuilder("logcat", "-c").start();
-            start();
-        } catch (IOException e) {
-            e.printStackTrace();
+            FLAG_WORK = true;
+            new Thread(new LogRunnable()).start();
+        } catch (IOException ignored) {}
+    }
+
+    private static class LogRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            BufferedReader reader = null;
+            try {
+                Process process = new ProcessBuilder("logcat", "-v", "threadtime").start();
+                reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (LogcatInfo.IGNORED_LOG.contains(line)) {
+                        continue;
+                    }
+                    if (FLAG_WORK) {
+                        if (sListener != null) {
+                            sListener.onReceiveLog(new LogcatInfo(line));
+                        }
+                    } else {
+                        LOG_BACKUP.add(new LogcatInfo(line));
+                    }
+                }
+                pause();
+            } catch (IOException ignored) {
+                pause();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException ignored) {}
+                }
+            }
         }
     }
 
     public interface Listener {
-        void onReceiveLog(String line);
+        void onReceiveLog(LogcatInfo line);
     }
 }

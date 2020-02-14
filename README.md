@@ -7,14 +7,18 @@
 #### 集成步骤
 
     dependencies {
-        debugImplementation 'com.hjq:logcat:3.2'
+        debugImplementation 'com.hjq:logcat:5.0'
     }
 
 #### 使用方式
 
-* 在 debug 模式下运行即可，在 release 正式打包的时不会自动集成
+* 无需调用，直接运行，然后授予悬浮窗权限即可
+
+* 在 debug 模式下运行即可，在 release 正式打包的时不会集成本库，尽管放心
 
 #### 截图欣赏
+
+![](picture/0.jpg)
 
 ![](picture/1.jpg)
 
@@ -46,6 +50,8 @@
 * 只需集成，无需调用
 
 * 日志长按可复制分享
+
+* 支持将日志保存到本地
 
 * 长日志点击可收缩展开显示
 
