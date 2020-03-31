@@ -80,6 +80,11 @@ final class LogcatAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    void removeItem(LogcatInfo item) {
+        mDataSet.remove(item);
+        notifyDataSetChanged();
+    }
+
     /**
      * 清空当前数据
      */

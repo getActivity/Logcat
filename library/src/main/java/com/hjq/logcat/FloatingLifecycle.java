@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 import com.hjq.xtoast.XToast;
 
 /**
@@ -37,7 +39,7 @@ final class FloatingLifecycle implements Application.ActivityLifecycleCallbacks 
             return;
         }
         mTopActivity = activity;
-        if (mToast != null && !mToast.isShow()) {
+        if (mToast != null && !mToast.isShow() && XXPermissions.isHasPermission(activity, Permission.SYSTEM_ALERT_WINDOW)) {
             mToast.show();
         }
     }

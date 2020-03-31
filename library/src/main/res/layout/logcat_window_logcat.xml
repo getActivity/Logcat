@@ -114,17 +114,31 @@
 
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/lv_log_list"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#2b2b2b"
-        android:dividerHeight="0px"
-        android:fadeScrollbars="true"
-        android:scrollbarSize="1dp"
-        android:scrollbarThumbVertical="@color/logcat_scrollbar_thumb_color"
-        android:scrollbars="vertical"
-        android:verticalScrollbarPosition="left"
-        tools:listitem="@layout/logcat_item_logcat" />
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/lv_log_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#2b2b2b"
+            android:dividerHeight="0px"
+            android:fadeScrollbars="true"
+            android:scrollbarSize="1dp"
+            android:scrollbarThumbVertical="@color/logcat_scrollbar_thumb_color"
+            android:scrollbars="vertical"
+            android:verticalScrollbarPosition="left"
+            tools:listitem="@layout/logcat_item_logcat" />
+
+        <ImageButton
+            android:id="@+id/ib_log_down"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="20dp"
+            android:background="@drawable/logcat_bg_log_roll"
+            android:src="@drawable/logcat_ic_down" />
+    </FrameLayout>
 
 </LinearLayout>

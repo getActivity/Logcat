@@ -31,6 +31,8 @@ final class LogcatInfo {
     private String mTag;
     /** 内容 */
     private String mLog;
+    /** 进程id */
+    private String mPid;
 
     LogcatInfo(String line) {
         Matcher matcher = PATTERN.matcher(line);
@@ -39,6 +41,7 @@ final class LogcatInfo {
         }
 
         mTime = matcher.group(1);
+        mPid = matcher.group(3);
         mLevel = matcher.group(4);
         mTag = matcher.group(5);
         mLog = matcher.group(6);
@@ -58,6 +61,10 @@ final class LogcatInfo {
 
     String getLog() {
         return mLog;
+    }
+
+    String getPid() {
+        return mPid;
     }
 
     void addLog(String text) {
