@@ -26,7 +26,7 @@ publish {
     userOrg = 'getactivity'
     groupId = 'com.hjq'
     artifactId = 'logcat'
-    version = '6.0'
+    version = '6.2'
     description = 'This is to help developers quickly see the logging framework they want'
     website = "https://github.com/getActivity/Logcat"
 }
