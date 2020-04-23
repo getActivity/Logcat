@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 60
-        versionName "6.0"
+        versionCode 62
+        versionName "6.2"
     }
 }
 
@@ -19,7 +19,7 @@ dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
     implementation 'com.hjq:xxpermissions:6.2'
     // 悬浮窗框架：https://github.com/getActivity/XToast
-    implementation 'com.hjq:xtoast:3.5'
+    implementation 'com.hjq:xtoast:5.0'
 }
 
 publish {

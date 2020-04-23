@@ -78,10 +78,16 @@ final class LogcatManager {
                     }
                     if (FLAG_WORK) {
                         if (sListener != null) {
-                            sListener.onReceiveLog(new LogcatInfo(line));
+                            LogcatInfo info = LogcatInfo.create(line);
+                            if (info != null) {
+                                sListener.onReceiveLog(info);
+                            }
                         }
                     } else {
-                        LOG_BACKUP.add(new LogcatInfo(line));
+                        LogcatInfo info = LogcatInfo.create(line);
+                        if (info != null) {
+                            LOG_BACKUP.add(info);
+                        }
                     }
                 }
                 pause();
@@ -98,6 +104,6 @@ final class LogcatManager {
     }
 
     public interface Listener {
-        void onReceiveLog(LogcatInfo line);
+        void onReceiveLog(LogcatInfo info);
     }
 }

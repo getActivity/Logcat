@@ -7,7 +7,7 @@
 #### 集成步骤
 
     dependencies {
-        debugImplementation 'com.hjq:logcat:6.0'
+        debugImplementation 'com.hjq:logcat:6.2'
     }
 
 #### 使用方式
@@ -56,6 +56,8 @@
 * 长日志点击可收缩展开显示
 
 * 日志搜索结果支持文本高亮
+
+* 支持对指定 TAG 的日志屏蔽
 
 * 多个相同 TAG 日志自动合并显示
 
