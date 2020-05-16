@@ -511,4 +511,11 @@ public final class LogcatActivity extends Activity
         // 移动到上一个任务栈
         moveTaskToBack(false);
     }
+
+    @Override
+    protected void onDestroy() {
+        // 把监听对象置空，不然会导致内存泄漏
+        LogcatManager.start(null);
+        super.onDestroy();
+    }
 }

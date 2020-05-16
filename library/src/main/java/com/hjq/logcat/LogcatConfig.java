@@ -21,19 +21,6 @@ final class LogcatConfig {
     }
 
     /**
-     * 申请权限次数
-     */
-    private static final String PERMISSIONS_COUNT = "permissions_count";
-
-    static int getPermissionsCount() {
-        return sConfig.getInt(PERMISSIONS_COUNT, 0);
-    }
-
-    static void setPermissionsCount(int count) {
-        sConfig.edit().putInt(PERMISSIONS_COUNT, count).apply();
-    }
-
-    /**
      * 日志过滤等级
      */
     private static final String LOGCAT_LEVEL = "logcat_level";

@@ -1,6 +1,6 @@
 package com.hjq.logcat;
 
-import android.app.Application;
+import android.app.Activity;
 import android.content.Intent;
 import android.view.Gravity;
 import android.view.View;
@@ -17,8 +17,8 @@ import com.hjq.xtoast.draggable.SpringDraggable;
  */
 final class FloatingWindow extends XToast implements OnClickListener {
 
-    FloatingWindow(Application application) {
-        super(application);
+    FloatingWindow(Activity activity) {
+        super(activity);
         setView(R.layout.logcat_window_floating);
         setAnimStyle(android.R.style.Animation_Toast);
         setDraggable(new SpringDraggable());

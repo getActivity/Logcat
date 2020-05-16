@@ -4,10 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
-import com.hjq.permissions.Permission;
-import com.hjq.permissions.XXPermissions;
-import com.hjq.xtoast.XToast;
-
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/Logcat
@@ -16,55 +12,33 @@ import com.hjq.xtoast.XToast;
  */
 final class FloatingLifecycle implements Application.ActivityLifecycleCallbacks {
 
-    private XToast mToast;
-    private Activity mTopActivity;
-
-    static void with(Application application, XToast toast) {
-        application.registerActivityLifecycleCallbacks(new FloatingLifecycle(toast));
-    }
-
-    private FloatingLifecycle(XToast toast) {
-        mToast = toast;
+    static void with(Application application) {
+        application.registerActivityLifecycleCallbacks(new FloatingLifecycle());
     }
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        if (activity instanceof LogcatActivity) {
+            return;
+        }
+        new FloatingWindow(activity).show();
+    }
 
     @Override
     public void onActivityStarted(Activity activity) {}
 
     @Override
-    public void onActivityResumed(Activity activity) {
-        if (activity instanceof LogcatActivity) {
-            return;
-        }
-        mTopActivity = activity;
-        if (mToast != null && !mToast.isShow() && XXPermissions.isHasPermission(activity, Permission.SYSTEM_ALERT_WINDOW)) {
-            mToast.show();
-        }
-    }
+    public void onActivityResumed(Activity activity) {}
 
     @Override
     public void onActivityPaused(Activity activity) {}
 
     @Override
-    public void onActivityStopped(Activity activity) {
-        if (activity instanceof LogcatActivity) {
-            return;
-        }
-        if (mTopActivity == activity) {
-            mTopActivity = null;
-            if (mToast != null && mToast.isShow()) {
-                mToast.cancel();
-            }
-        }
-    }
+    public void onActivityStopped(Activity activity) {}
 
     @Override
     public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 
     @Override
-    public void onActivityDestroyed(Activity activity) {
-
-    }
+    public void onActivityDestroyed(Activity activity) {}
 }
