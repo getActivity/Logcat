@@ -29,6 +29,5 @@ final class FloatingWindow extends XToast implements OnClickListener {
     @Override
     public void onClick(XToast toast, View view) {
         startActivity(new Intent(getContext(), LogcatActivity.class));
-        cancel();
     }
 }

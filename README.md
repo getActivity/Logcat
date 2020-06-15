@@ -2,14 +2,14 @@
 
 > 码云地址：[Gitee](https://gitee.com/getActivity/Logcat)
 
-> [点击此处下载Demo](https://raw.githubusercontent.com/getActivity/Logcat/master/Logcat.apk)
+> [点击此处下载Demo](Logcat.apk)
 
 ![](picture/logo.png)
 
 #### 集成步骤
 
     dependencies {
-        debugImplementation 'com.hjq:logcat:6.5'
+        debugImplementation 'com.hjq:logcat:6.8'
     }
 
 #### 使用方式

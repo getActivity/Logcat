@@ -187,7 +187,7 @@ public final class LogcatActivity extends Activity
                                             @Override
                                             public void noPermission(List<String> denied, boolean quick) {
                                                 if (quick) {
-                                                    XXPermissions.gotoPermissionSettings(LogcatActivity.this);
+                                                    XXPermissions.startPermissionActivity(LogcatActivity.this);
                                                     toast("请授予存储权限之后再操作");
                                                 }
                                             }
@@ -232,7 +232,7 @@ public final class LogcatActivity extends Activity
                         @Override
                         public void noPermission(List<String> denied, boolean quick) {
                             if (quick) {
-                                XXPermissions.gotoPermissionSettings(LogcatActivity.this);
+                                XXPermissions.startPermissionActivity(LogcatActivity.this);
                                 toast("请授予存储权限之后再操作");
                             }
                         }
@@ -383,25 +383,23 @@ public final class LogcatActivity extends Activity
      */
     private void initFilter() {
         File file = new File(LOG_DIRECTORY, LOGCAT_TAG_FILTER_FILE);
-        if (!file.isFile()) {
-            return;
-        }
-
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? StandardCharsets.UTF_8 : Charset.forName("UTF-8")));
-            String tag;
-            while ((tag = reader.readLine()) != null) {
-                mTagFilter.add(tag);
-            }
-        } catch (IOException e) {
-            toast("读取屏蔽配置失败");
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ignored) {}
+        if (file.exists() && file.isFile() && XXPermissions.hasPermission(this, Permission.Group.STORAGE)) {
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? StandardCharsets.UTF_8 : Charset.forName("UTF-8")));
+                String tag;
+                while ((tag = reader.readLine()) != null) {
+                    mTagFilter.add(tag);
+                }
+            } catch (IOException e) {
+                toast("读取屏蔽配置失败");
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException ignored) {}
+                }
             }
         }
     }
