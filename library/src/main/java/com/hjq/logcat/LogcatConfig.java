@@ -26,11 +26,17 @@ final class LogcatConfig {
     private static final String LOGCAT_LEVEL = "logcat_level";
 
     static String getLogcatLevel() {
-        return sConfig.getString(LOGCAT_LEVEL, "V");
+        if (sConfig != null) {
+            return sConfig.getString(LOGCAT_LEVEL, "V");
+        } else {
+            return "V";
+        }
     }
 
     static void setLogcatLevel(String level) {
-        sConfig.edit().putString(LOGCAT_LEVEL, level).apply();
+        if (sConfig != null) {
+            sConfig.edit().putString(LOGCAT_LEVEL, level).apply();
+        }
     }
 
     /**
@@ -39,10 +45,16 @@ final class LogcatConfig {
     private static final String LOGCAT_TEXT = "logcat_text";
 
     static String getLogcatText() {
-        return sConfig.getString(LOGCAT_TEXT, "");
+        if(sConfig != null) {
+            return sConfig.getString(LOGCAT_TEXT, "");
+        } else {
+            return "";
+        }
     }
 
     static void setLogcatText(String keyword) {
-        sConfig.edit().putString(LOGCAT_TEXT, keyword).apply();
+        if (sConfig != null) {
+            sConfig.edit().putString(LOGCAT_TEXT, keyword).apply();
+        }
     }
 }

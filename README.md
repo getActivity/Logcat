@@ -9,7 +9,7 @@
 #### 集成步骤
 
     dependencies {
-        debugImplementation 'com.hjq:logcat:6.8'
+        debugImplementation 'com.hjq:logcat:6.9'
     }
 
 #### 使用方式
