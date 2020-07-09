@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 69
-        versionName "6.9"
+        versionCode 80
+        versionName "8.0"
     }
 }
 
@@ -26,7 +26,7 @@ publish {
     userOrg = 'getactivity'
     groupId = 'com.hjq'
     artifactId = 'logcat'
-    version = '6.9'
+    version = '8.0'
     description = 'This is to help developers quickly see the logging framework they want'
     website = "https://github.com/getActivity/Logcat"
 }

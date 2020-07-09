@@ -511,9 +511,20 @@ public final class LogcatActivity extends Activity
     }
 
     @Override
+    protected void onResume() {
+        LogcatManager.resume();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        LogcatManager.pause();
+        super.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
-        // 把监听对象置空，不然会导致内存泄漏
-        LogcatManager.start(null);
+        LogcatManager.destroy();
         super.onDestroy();
     }
 }

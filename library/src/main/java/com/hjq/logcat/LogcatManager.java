@@ -15,6 +15,7 @@ import java.util.List;
  */
 final class LogcatManager {
 
+    /** 日志捕捉监听对象 */
     private static volatile Listener sListener;
     /** 日志捕捉标记 */
     private static volatile boolean FLAG_WORK;
@@ -25,10 +26,8 @@ final class LogcatManager {
      * 开始捕捉
      */
     static void start(Listener listener) {
-        if (sListener == null) {
-            FLAG_WORK = true;
-            new Thread(new LogRunnable()).start();
-        }
+        FLAG_WORK = true;
+        new Thread(new LogRunnable()).start();
         sListener = listener;
     }
 
@@ -37,9 +36,10 @@ final class LogcatManager {
      */
     static void resume() {
         FLAG_WORK = true;
-        if (sListener != null && !LOG_BACKUP.isEmpty()) {
+        final Listener listener = sListener;
+        if (listener != null && !LOG_BACKUP.isEmpty()) {
             for (LogcatInfo info : LOG_BACKUP) {
-                sListener.onReceiveLog(info);
+                listener.onReceiveLog(info);
             }
         }
         LOG_BACKUP.clear();
@@ -50,6 +50,15 @@ final class LogcatManager {
      */
     static void pause() {
         FLAG_WORK = false;
+    }
+
+    /**
+     * 停止捕捉
+     */
+    static void destroy() {
+        FLAG_WORK = false;
+        // 把监听对象置空，不然会导致内存泄漏
+        sListener = null;
     }
 
     /**
@@ -77,10 +86,11 @@ final class LogcatManager {
                         continue;
                     }
                     if (FLAG_WORK) {
-                        if (sListener != null) {
-                            LogcatInfo info = LogcatInfo.create(line);
-                            if (info != null) {
-                                sListener.onReceiveLog(info);
+                        LogcatInfo info = LogcatInfo.create(line);
+                        if (info != null) {
+                            final Listener listener = sListener;
+                            if (listener != null) {
+                                listener.onReceiveLog(info);
                             }
                         }
                     } else {
