@@ -138,8 +138,10 @@ public final class LogcatActivity extends Activity
     @Override
     public void onReceiveLog(LogcatInfo info) {
         // 这个 Tag 必须不在过滤列表中，并且这个日志是当前应用打印的
-        if (!mTagFilter.contains(info.getTag()) && Integer.parseInt(info.getPid()) == android.os.Process.myPid()) {
-            mListView.post(new LogRunnable(info));
+        if (Integer.parseInt(info.getPid()) == android.os.Process.myPid()) {
+            if (!mTagFilter.contains(info.getTag())) {
+                mListView.post(new LogRunnable(info));
+            }
         }
     }
 

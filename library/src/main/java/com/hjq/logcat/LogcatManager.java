@@ -39,7 +39,9 @@ final class LogcatManager {
         final Listener listener = sListener;
         if (listener != null && !LOG_BACKUP.isEmpty()) {
             for (LogcatInfo info : LOG_BACKUP) {
-                listener.onReceiveLog(info);
+                if (info != null) {
+                    listener.onReceiveLog(info);
+                }
             }
         }
         LOG_BACKUP.clear();
@@ -82,20 +84,21 @@ final class LogcatManager {
                 reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    if (LogcatInfo.IGNORED_LOG.contains(line)) {
-                        continue;
-                    }
-                    if (FLAG_WORK) {
+                    synchronized (LogcatManager.class) {
+                        if (LogcatInfo.IGNORED_LOG.contains(line)) {
+                            continue;
+                        }
                         LogcatInfo info = LogcatInfo.create(line);
-                        if (info != null) {
+                        if (info == null) {
+                            continue;
+                        }
+                        if (FLAG_WORK) {
                             final Listener listener = sListener;
                             if (listener != null) {
                                 listener.onReceiveLog(info);
                             }
-                        }
-                    } else {
-                        LogcatInfo info = LogcatInfo.create(line);
-                        if (info != null) {
+                        } else {
+                            // 这里可能会出现下标异常
                             LOG_BACKUP.add(info);
                         }
                     }
