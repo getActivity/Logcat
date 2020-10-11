@@ -8,9 +8,11 @@
 
 #### 集成步骤
 
-    dependencies {
-        debugImplementation 'com.hjq:logcat:8.2'
-    }
+```groovy
+dependencies {
+    debugImplementation 'com.hjq:logcat:8.6'
+}
+```
 
 #### 使用方式
 
@@ -40,12 +42,14 @@
 
 > 在项目的 `values/color.xml` 中加入你喜欢的配色，例如
 
-    <color name="logcat_level_verbose_color">#FFBBBBBB</color>
-    <color name="logcat_level_debug_color">#FF33B5E5</color>
-    <color name="logcat_level_info_color">#FF99CC00</color>
-    <color name="logcat_level_warn_color">#FFFFBB33</color>
-    <color name="logcat_level_error_color">#FFFF4444</color>
-    <color name="logcat_level_other_color">#FFFFFFFF</color>
+```xml
+<color name="logcat_level_verbose_color">#FFBBBBBB</color>
+<color name="logcat_level_debug_color">#FF33B5E5</color>
+<color name="logcat_level_info_color">#FF99CC00</color>
+<color name="logcat_level_warn_color">#FFFFBB33</color>
+<color name="logcat_level_error_color">#FFFF4444</color>
+<color name="logcat_level_other_color">#FFFFFFFF</color>
+```
 
 #### 框架亮点
 
@@ -67,7 +71,7 @@
 
 #### 作者的其他开源项目
 
-* 架构工程：[AndroidProject](https://github.com/getActivity/AndroidProject)
+* 安卓架构：[AndroidProject](https://github.com/getActivity/AndroidProject)
 
 * 网络框架：[EasyHttp](https://github.com/getActivity/EasyHttp)
 

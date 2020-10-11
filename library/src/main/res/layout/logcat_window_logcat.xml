@@ -138,7 +138,8 @@
             android:layout_gravity="end|bottom"
             android:layout_margin="20dp"
             android:background="@drawable/logcat_bg_log_roll"
-            android:src="@drawable/logcat_ic_down" />
+            android:src="@drawable/logcat_ic_down"
+            android:translationZ="10dp" />
     </FrameLayout>
 
 </LinearLayout>

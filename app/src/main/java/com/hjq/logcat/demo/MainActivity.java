@@ -3,12 +3,13 @@ package com.hjq.logcat.demo;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.hjq.bar.OnTitleBarListener;
 import com.hjq.bar.TitleBar;
@@ -62,21 +63,21 @@ public class MainActivity extends AppCompatActivity implements OnTitleBarListene
 
     @Override
     public void onResume() {
+        super.onResume();
         mWebView.onResume();
         mWebView.resumeTimers();
-        super.onResume();
     }
 
     @Override
     public void onPause() {
+        super.onPause();
         mWebView.onPause();
         mWebView.pauseTimers();
-        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        ((ViewGroup) mWebView.getParent()).removeView(mWebView);
+        super.onDestroy();
         //清除历史记录
         mWebView.clearHistory();
         //停止加载
@@ -89,6 +90,6 @@ public class MainActivity extends AppCompatActivity implements OnTitleBarListene
         mWebView.removeAllViews();
         //销毁此的WebView的内部状态
         mWebView.destroy();
-        super.onDestroy();
+        ((ViewGroup) mWebView.getParent()).removeView(mWebView);
     }
 }

@@ -179,17 +179,19 @@ public final class LogcatActivity extends Activity
                                 break;
                             case 3:
                                 XXPermissions.with(LogcatActivity.this)
-                                        .permission(Permission.Group.STORAGE)
+                                        .permission(Permission.MANAGE_EXTERNAL_STORAGE)
                                         .request(new OnPermission() {
                                             @Override
-                                            public void hasPermission(List<String> granted, boolean isAll) {
-                                                addFilter(mAdapter.getItem(position).getTag());
+                                            public void hasPermission(List<String> granted, boolean all) {
+                                                if (all) {
+                                                    addFilter(mAdapter.getItem(position).getTag());
+                                                }
                                             }
 
                                             @Override
-                                            public void noPermission(List<String> denied, boolean quick) {
-                                                if (quick) {
-                                                    XXPermissions.startPermissionActivity(LogcatActivity.this);
+                                            public void noPermission(List<String> denied, boolean never) {
+                                                if (never) {
+                                                    XXPermissions.startPermissionActivity(LogcatActivity.this, denied);
                                                     toast("请授予存储权限之后再操作");
                                                 }
                                             }
@@ -224,17 +226,19 @@ public final class LogcatActivity extends Activity
     public void onClick(View v) {
         if (v == mSaveView) {
             XXPermissions.with(this)
-                    .permission(Permission.Group.STORAGE)
+                    .permission(Permission.MANAGE_EXTERNAL_STORAGE)
                     .request(new OnPermission() {
                         @Override
-                        public void hasPermission(List<String> granted, boolean isAll) {
-                            saveLogToFile();
+                        public void hasPermission(List<String> granted, boolean all) {
+                            if (all) {
+                                saveLogToFile();
+                            }
                         }
 
                         @Override
-                        public void noPermission(List<String> denied, boolean quick) {
-                            if (quick) {
-                                XXPermissions.startPermissionActivity(LogcatActivity.this);
+                        public void noPermission(List<String> denied, boolean never) {
+                            if (never) {
+                                XXPermissions.startPermissionActivity(LogcatActivity.this, denied);
                                 toast("请授予存储权限之后再操作");
                             }
                         }
@@ -385,7 +389,7 @@ public final class LogcatActivity extends Activity
      */
     private void initFilter() {
         File file = new File(LOG_DIRECTORY, LOGCAT_TAG_FILTER_FILE);
-        if (file.exists() && file.isFile() && XXPermissions.hasPermission(this, Permission.Group.STORAGE)) {
+        if (file.exists() && file.isFile() && XXPermissions.hasPermission(this, Permission.MANAGE_EXTERNAL_STORAGE)) {
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),
@@ -514,19 +518,19 @@ public final class LogcatActivity extends Activity
 
     @Override
     protected void onResume() {
-        LogcatManager.resume();
         super.onResume();
+        LogcatManager.resume();
     }
 
     @Override
     protected void onPause() {
-        LogcatManager.pause();
         super.onPause();
+        LogcatManager.pause();
     }
 
     @Override
     protected void onDestroy() {
-        LogcatManager.destroy();
         super.onDestroy();
+        LogcatManager.destroy();
     }
 }

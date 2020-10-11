@@ -21,7 +21,8 @@ final class FloatingLifecycle implements Application.ActivityLifecycleCallbacks 
         if (activity instanceof LogcatActivity) {
             return;
         }
-        new FloatingWindow(activity).show();
+        new FloatingWindow(activity)
+                .show();
     }
 
     @Override
