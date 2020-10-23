@@ -10,7 +10,7 @@
 
 ```groovy
 dependencies {
-    debugImplementation 'com.hjq:logcat:8.6'
+    debugImplementation 'com.hjq:logcat:8.8'
 }
 ```
 
@@ -71,7 +71,7 @@ dependencies {
 
 #### 作者的其他开源项目
 
-* 安卓架构：[AndroidProject](https://github.com/getActivity/AndroidProject)
+* 安卓技术中台：[AndroidProject](https://github.com/getActivity/AndroidProject)
 
 * 网络框架：[EasyHttp](https://github.com/getActivity/EasyHttp)
 

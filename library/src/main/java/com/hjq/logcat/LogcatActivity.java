@@ -179,7 +179,7 @@ public final class LogcatActivity extends Activity
                                 break;
                             case 3:
                                 XXPermissions.with(LogcatActivity.this)
-                                        .permission(Permission.MANAGE_EXTERNAL_STORAGE)
+                                        .permission(getStoragePermission())
                                         .request(new OnPermission() {
                                             @Override
                                             public void hasPermission(List<String> granted, boolean all) {
@@ -226,7 +226,7 @@ public final class LogcatActivity extends Activity
     public void onClick(View v) {
         if (v == mSaveView) {
             XXPermissions.with(this)
-                    .permission(Permission.MANAGE_EXTERNAL_STORAGE)
+                    .permission(getStoragePermission())
                     .request(new OnPermission() {
                         @Override
                         public void hasPermission(List<String> granted, boolean all) {
@@ -389,7 +389,7 @@ public final class LogcatActivity extends Activity
      */
     private void initFilter() {
         File file = new File(LOG_DIRECTORY, LOGCAT_TAG_FILTER_FILE);
-        if (file.exists() && file.isFile() && XXPermissions.hasPermission(this, Permission.MANAGE_EXTERNAL_STORAGE)) {
+        if (file.exists() && file.isFile() && XXPermissions.hasPermission(this, getStoragePermission())) {
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),
@@ -532,5 +532,19 @@ public final class LogcatActivity extends Activity
     protected void onDestroy() {
         super.onDestroy();
         LogcatManager.destroy();
+    }
+
+    /**
+     * 获取存储权限
+     */
+    private String[] getStoragePermission() {
+        // 如果当前应用适配的是 Android 11 及以上
+        if (getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.R) {
+            // 返回 Android 11 的存储权限
+            return new String[]{Permission.MANAGE_EXTERNAL_STORAGE};
+        } else {
+            // 否则就返回旧版的存储权限
+            return Permission.Group.STORAGE;
+        }
     }
 }
