@@ -1,13 +1,17 @@
 package com.hjq.logcat;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -20,9 +24,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.hjq.permissions.OnPermission;
-import com.hjq.permissions.Permission;
-import com.hjq.permissions.XXPermissions;
 import com.hjq.xtoast.XToast;
 
 import java.io.BufferedReader;
@@ -178,24 +179,12 @@ public final class LogcatActivity extends Activity
                                 mAdapter.removeItem(position);
                                 break;
                             case 3:
-                                XXPermissions.with(LogcatActivity.this)
-                                        .permission(getStoragePermission())
-                                        .request(new OnPermission() {
-                                            @Override
-                                            public void hasPermission(List<String> granted, boolean all) {
-                                                if (all) {
-                                                    addFilter(mAdapter.getItem(position).getTag());
-                                                }
-                                            }
-
-                                            @Override
-                                            public void noPermission(List<String> denied, boolean never) {
-                                                if (never) {
-                                                    XXPermissions.startPermissionActivity(LogcatActivity.this, denied);
-                                                    toast("请授予存储权限之后再操作");
-                                                }
-                                            }
-                                        });
+                                if (!checkPermission()) {
+                                    toast("请授予存储权限之后再操作");
+                                    requestPermission();
+                                    break;
+                                }
+                                addFilter(mAdapter.getItem(position).getTag());
                                 break;
                             default:
                                 break;
@@ -225,24 +214,12 @@ public final class LogcatActivity extends Activity
     @Override
     public void onClick(View v) {
         if (v == mSaveView) {
-            XXPermissions.with(this)
-                    .permission(getStoragePermission())
-                    .request(new OnPermission() {
-                        @Override
-                        public void hasPermission(List<String> granted, boolean all) {
-                            if (all) {
-                                saveLogToFile();
-                            }
-                        }
-
-                        @Override
-                        public void noPermission(List<String> denied, boolean never) {
-                            if (never) {
-                                XXPermissions.startPermissionActivity(LogcatActivity.this, denied);
-                                toast("请授予存储权限之后再操作");
-                            }
-                        }
-                    });
+            if (!checkPermission()) {
+                toast("请授予存储权限之后再操作");
+                requestPermission();
+                return;
+            }
+            saveLogToFile();
         } else if (v == mLevelView) {
             new ChooseWindow(this)
                     .setList(ARRAY_LOG_LEVEL)
@@ -389,7 +366,7 @@ public final class LogcatActivity extends Activity
      */
     private void initFilter() {
         File file = new File(LOG_DIRECTORY, LOGCAT_TAG_FILTER_FILE);
-        if (file.exists() && file.isFile() && XXPermissions.hasPermission(this, getStoragePermission())) {
+        if (file.exists() && file.isFile() && checkPermission()) {
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),
@@ -487,6 +464,7 @@ public final class LogcatActivity extends Activity
 
             toast("保存成功：" + file.getPath());
         } catch (IOException e) {
+            e.printStackTrace();
             toast("保存失败");
         } finally {
             if (writer != null) {
@@ -535,16 +513,31 @@ public final class LogcatActivity extends Activity
     }
 
     /**
-     * 获取存储权限
+     * 是否有存储权限
      */
-    private String[] getStoragePermission() {
+    private boolean checkPermission() {
         // 如果当前应用适配的是 Android 11 及以上
-        if (getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.R) {
-            // 返回 Android 11 的存储权限
-            return new String[]{Permission.MANAGE_EXTERNAL_STORAGE};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.R) {
+            return Environment.isExternalStorageManager();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         } else {
-            // 否则就返回旧版的存储权限
-            return Permission.Group.STORAGE;
+            return true;
+        }
+    }
+
+    /**
+     * 申请存储权限
+     */
+    private void requestPermission() {
+        // 如果当前应用适配的是 Android 11 及以上
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.R) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, 1024);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1024);
         }
     }
 }

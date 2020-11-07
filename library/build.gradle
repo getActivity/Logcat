@@ -10,23 +10,25 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 88
-        versionName "8.8"
+        versionCode 90
+        versionName "9.0"
+    }
+
+    lintOptions {
+        abortOnError false
     }
 }
 
 dependencies {
-    // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.hjq:xxpermissions:8.8'
     // 悬浮窗框架：https://github.com/getActivity/XToast
-    implementation 'com.hjq:xtoast:6.0'
+    implementation 'com.hjq:xtoast:6.2'
 }
 
 publish {
     userOrg = 'getactivity'
     groupId = 'com.hjq'
     artifactId = 'logcat'
-    version = '8.8'
+    version = '9.0'
     description = 'This is to help developers quickly see the logging framework they want'
     website = "https://github.com/getActivity/Logcat"
 }

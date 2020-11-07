@@ -10,7 +10,8 @@
 
 ```groovy
 dependencies {
-    debugImplementation 'com.hjq:logcat:8.8'
+    // 日志调试框架：https://github.com/getActivity/Logcat
+    debugImplementation 'com.hjq:logcat:9.0'
 }
 ```
 
