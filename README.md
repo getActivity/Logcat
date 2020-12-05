@@ -1,8 +1,8 @@
 # 日志调试框架
 
-> 码云地址：[Gitee](https://gitee.com/getActivity/Logcat)
+* 码云地址：[Gitee](https://gitee.com/getActivity/Logcat)
 
-> [点击此处下载Demo](Logcat.apk)
+* [点击此处下载Demo](Logcat.apk)
 
 ![](picture/logo.png)
 
@@ -11,7 +11,7 @@
 ```groovy
 dependencies {
     // 日志调试框架：https://github.com/getActivity/Logcat
-    debugImplementation 'com.hjq:logcat:9.0'
+    debugImplementation 'com.hjq:logcat:9.2'
 }
 ```
 
@@ -85,6 +85,8 @@ dependencies {
 * 国际化框架：[MultiLanguages](https://github.com/getActivity/MultiLanguages)
 
 * 悬浮窗框架：[XToast](https://github.com/getActivity/XToast)
+
+* Gson 解析容错：[GsonFactory](https://github.com/getActivity/GsonFactory)
 
 #### Android技术讨论Q群：78797078
 
