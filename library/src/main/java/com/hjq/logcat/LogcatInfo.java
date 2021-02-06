@@ -43,7 +43,7 @@ final class LogcatInfo {
 
         LogcatInfo info = new LogcatInfo();
         info.time = matcher.group(1);
-        info.pid = matcher.group(3);
+        info.pid = matcher.group(2);
         info.level = matcher.group(4);
         info.tag = matcher.group(5);
         info.log = matcher.group(6);

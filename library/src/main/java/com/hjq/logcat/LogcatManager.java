@@ -13,10 +13,11 @@ import java.util.List;
  *    desc   : 日志管理类
  *    doc    : https://developer.android.google.cn/studio/command-line/logcat
  */
+@SuppressWarnings("AlibabaAvoidManuallyCreateThread")
 final class LogcatManager {
 
     /** 日志捕捉监听对象 */
-    private static volatile Listener sListener;
+    private static volatile Callback sCallback;
     /** 日志捕捉标记 */
     private static volatile boolean FLAG_WORK;
     /** 备用存放集合 */
@@ -25,10 +26,10 @@ final class LogcatManager {
     /**
      * 开始捕捉
      */
-    static void start(Listener listener) {
+    static void start(Callback callback) {
         FLAG_WORK = true;
         new Thread(new LogRunnable()).start();
-        sListener = listener;
+        sCallback = callback;
     }
 
     /**
@@ -36,12 +37,13 @@ final class LogcatManager {
      */
     static void resume() {
         FLAG_WORK = true;
-        final Listener listener = sListener;
-        if (listener != null && !LOG_BACKUP.isEmpty()) {
+        final Callback callback = sCallback;
+        if (callback != null && !LOG_BACKUP.isEmpty()) {
             for (LogcatInfo info : LOG_BACKUP) {
-                if (info != null) {
-                    listener.onReceiveLog(info);
+                if (info == null) {
+                    continue;
                 }
+                callback.onReceiveLog(info);
             }
         }
         LOG_BACKUP.clear();
@@ -60,7 +62,7 @@ final class LogcatManager {
     static void destroy() {
         FLAG_WORK = false;
         // 把监听对象置空，不然会导致内存泄漏
-        sListener = null;
+        sCallback = null;
     }
 
     /**
@@ -92,14 +94,15 @@ final class LogcatManager {
                         if (info == null) {
                             continue;
                         }
-                        if (FLAG_WORK) {
-                            final Listener listener = sListener;
-                            if (listener != null) {
-                                listener.onReceiveLog(info);
-                            }
-                        } else {
+                        if (!FLAG_WORK) {
                             // 这里可能会出现下标异常
                             LOG_BACKUP.add(info);
+                            continue;
+                        }
+
+                        final Callback callback = sCallback;
+                        if (callback != null) {
+                            callback.onReceiveLog(info);
                         }
                     }
                 }
@@ -116,7 +119,11 @@ final class LogcatManager {
         }
     }
 
-    public interface Listener {
+    public interface Callback {
+
+        /**
+         * 收到日志
+         */
         void onReceiveLog(LogcatInfo info);
     }
 }

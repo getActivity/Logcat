@@ -1,17 +1,12 @@
 package com.hjq.logcat;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -50,15 +45,15 @@ import java.util.Locale;
  */
 public final class LogcatActivity extends Activity
         implements TextWatcher, View.OnLongClickListener, View.OnClickListener,
-        CompoundButton.OnCheckedChangeListener, LogcatManager.Listener,
+        CompoundButton.OnCheckedChangeListener, LogcatManager.Callback,
         AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener {
 
     private final static String[] ARRAY_LOG_LEVEL = {"Verbose", "Debug", "Info", "Warn", "Error"};
 
-    private final static File LOG_DIRECTORY = new File(Environment.getExternalStorageDirectory(), "Logcat");
+    private final static String FILE_TYPE = "Logcat";
     private final static String LOGCAT_TAG_FILTER_FILE = "logcat_tag_filter.txt";
 
-    private List<LogcatInfo> mLogData = new ArrayList<>();
+    private final List<LogcatInfo> mLogData = new ArrayList<>();
 
     private CheckBox mSwitchView;
     private View mSaveView;
@@ -75,13 +70,13 @@ public final class LogcatActivity extends Activity
     private String mLogLevel = "V";
 
     /** Tag 过滤规则 */
-    private List<String> mTagFilter = new ArrayList<>();
+    private final List<String> mTagFilter = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // 设置全屏显示
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.logcat_window_logcat);
 
         mSwitchView = findViewById(R.id.iv_log_switch);
@@ -127,22 +122,17 @@ public final class LogcatActivity extends Activity
             }
         }, 1000);
 
-        if (!LOG_DIRECTORY.isDirectory()) {
-            LOG_DIRECTORY.delete();
-        }
-        if (!LOG_DIRECTORY.exists()) {
-            LOG_DIRECTORY.mkdirs();
-        }
         initFilter();
     }
 
     @Override
     public void onReceiveLog(LogcatInfo info) {
         // 这个 Tag 必须不在过滤列表中，并且这个日志是当前应用打印的
-        if (Integer.parseInt(info.getPid()) == android.os.Process.myPid()) {
-            if (!mTagFilter.contains(info.getTag())) {
-                mListView.post(new LogRunnable(info));
-            }
+        if (Integer.parseInt(info.getPid()) != android.os.Process.myPid()) {
+            return;
+        }
+        if (!mTagFilter.contains(info.getTag())) {
+            mListView.post(new LogRunnable(info));
         }
     }
 
@@ -154,7 +144,7 @@ public final class LogcatActivity extends Activity
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
         new ChooseWindow(this)
-                .setList("复制日志", "分享日志", "删除日志", "屏蔽日志")
+                .setList(R.string.logcat_options_copy, R.string.logcat_options_share, R.string.logcat_options_delete, R.string.logcat_options_shield)
                 .setListener(new ChooseWindow.OnListener() {
                     @Override
                     public void onSelected(final int location) {
@@ -163,27 +153,22 @@ public final class LogcatActivity extends Activity
                                 ClipboardManager manager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                                 if (manager != null) {
                                     manager.setPrimaryClip(ClipData.newPlainText("log", mAdapter.getItem(position).getLog()));
-                                    toast("日志复制成功");
+                                    toast(R.string.logcat_copy_succeed);
                                 } else {
-                                    toast("日志复制失败");
+                                    toast(R.string.logcat_copy_fail);
                                 }
                                 break;
                             case 1:
                                 Intent intent = new Intent(Intent.ACTION_SEND);
                                 intent.setType("text/plain");
                                 intent.putExtra(Intent.EXTRA_TEXT, mAdapter.getItem(position).getLog());
-                                startActivity(Intent.createChooser(intent, "分享日志"));
+                                startActivity(Intent.createChooser(intent, getResources().getString(R.string.logcat_options_share)));
                                 break;
                             case 2:
                                 mLogData.remove(mAdapter.getItem(position));
                                 mAdapter.removeItem(position);
                                 break;
                             case 3:
-                                if (!checkPermission()) {
-                                    toast("请授予存储权限之后再操作");
-                                    requestPermission();
-                                    break;
-                                }
                                 addFilter(mAdapter.getItem(position).getTag());
                                 break;
                             default:
@@ -198,15 +183,15 @@ public final class LogcatActivity extends Activity
     @Override
     public boolean onLongClick(View v) {
         if (v == mSwitchView) {
-            toast("日志捕获开关");
+            toast(R.string.logcat_capture);
         } else if (v == mSaveView) {
-            toast("保存日志");
+            toast(R.string.logcat_save);
         }else if (v == mLevelView) {
-            toast("日志等级过滤");
+            toast(R.string.logcat_level);
         } else if (v == mCleanView) {
-            toast("清空日志");
+            toast(R.string.logcat_empty);
         } else if (v == mCloseView) {
-            toast("关闭显示");
+            toast(R.string.logcat_close);
         }
         return true;
     }
@@ -214,11 +199,6 @@ public final class LogcatActivity extends Activity
     @Override
     public void onClick(View v) {
         if (v == mSaveView) {
-            if (!checkPermission()) {
-                toast("请授予存储权限之后再操作");
-                requestPermission();
-                return;
-            }
             saveLogToFile();
         } else if (v == mLevelView) {
             new ChooseWindow(this)
@@ -250,7 +230,7 @@ public final class LogcatActivity extends Activity
                     .show();
         } else if (v == mEmptyView) {
             mSearchView.setText("");
-        }else if (v == mCleanView) {
+        } else if (v == mCleanView) {
             LogcatManager.clear();
             mAdapter.clearData();
         } else if (v == mCloseView) {
@@ -264,7 +244,7 @@ public final class LogcatActivity extends Activity
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
-            toast("日志捕捉已暂停");
+            toast(R.string.logcat_capture_pause);
             LogcatManager.pause();
         } else {
             LogcatManager.resume();
@@ -299,35 +279,37 @@ public final class LogcatActivity extends Activity
     }
 
     private void setLogLevel(String level) {
-        if (!level.equals(mLogLevel)) {
-            mLogLevel = level;
-            LogcatConfig.setLogcatLevel(level);
-            afterTextChanged(mSearchView.getText());
-            switch (level) {
-                case "V":
-                    mLevelView.setText(ARRAY_LOG_LEVEL[0]);
-                    break;
-                case "D":
-                    mLevelView.setText(ARRAY_LOG_LEVEL[1]);
-                    break;
-                case "I":
-                    mLevelView.setText(ARRAY_LOG_LEVEL[2]);
-                    break;
-                case "W":
-                    mLevelView.setText(ARRAY_LOG_LEVEL[3]);
-                    break;
-                case "E":
-                    mLevelView.setText(ARRAY_LOG_LEVEL[4]);
-                    break;
-                default:
-                    break;
-            }
+        if (level.equals(mLogLevel)) {
+            return;
+        }
+
+        mLogLevel = level;
+        LogcatConfig.setLogcatLevel(level);
+        afterTextChanged(mSearchView.getText());
+        switch (level) {
+            case "V":
+                mLevelView.setText(ARRAY_LOG_LEVEL[0]);
+                break;
+            case "D":
+                mLevelView.setText(ARRAY_LOG_LEVEL[1]);
+                break;
+            case "I":
+                mLevelView.setText(ARRAY_LOG_LEVEL[2]);
+                break;
+            case "W":
+                mLevelView.setText(ARRAY_LOG_LEVEL[3]);
+                break;
+            case "E":
+                mLevelView.setText(ARRAY_LOG_LEVEL[4]);
+                break;
+            default:
+                break;
         }
     }
 
     private class LogRunnable implements Runnable {
 
-        private LogcatInfo info;
+        private final LogcatInfo info;
 
         private LogRunnable(LogcatInfo info) {
             this.info = info;
@@ -351,11 +333,12 @@ public final class LogcatActivity extends Activity
             String content = mSearchView.getText().toString();
             if ("".equals(content) && "V".equals(mLogLevel)) {
                 mAdapter.addItem(info);
-            } else {
-                if (info.getLevel().equals(mLogLevel)) {
-                    if (info.getLog().contains(content) || info.getTag().contains(content)) {
-                        mAdapter.addItem(info);
-                    }
+                return;
+            }
+
+            if (info.getLevel().equals(mLogLevel)) {
+                if (info.getLog().contains(content) || info.getTag().contains(content)) {
+                    mAdapter.addItem(info);
                 }
             }
         }
@@ -365,8 +348,8 @@ public final class LogcatActivity extends Activity
      * 初始化 Tag 过滤器
      */
     private void initFilter() {
-        File file = new File(LOG_DIRECTORY, LOGCAT_TAG_FILTER_FILE);
-        if (file.exists() && file.isFile() && checkPermission()) {
+        File file = new File(getExternalFilesDir(FILE_TYPE), LOGCAT_TAG_FILTER_FILE);
+        if (file.exists() && file.isFile()) {
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),
@@ -376,7 +359,7 @@ public final class LogcatActivity extends Activity
                     mTagFilter.add(tag);
                 }
             } catch (IOException e) {
-                toast("读取屏蔽配置失败");
+                toast(R.string.logcat_read_config_fail);
             } finally {
                 if (reader != null) {
                     try {
@@ -394,7 +377,7 @@ public final class LogcatActivity extends Activity
         mTagFilter.add(tag);
         BufferedWriter writer = null;
         try {
-            File file = new File(LOG_DIRECTORY, LOGCAT_TAG_FILTER_FILE);
+            File file = new File(getExternalFilesDir(FILE_TYPE), LOGCAT_TAG_FILTER_FILE);
             if (!file.isFile()) {
                 file.delete();
             }
@@ -422,9 +405,9 @@ public final class LogcatActivity extends Activity
                 mAdapter.notifyDataSetChanged();
             }
 
-            toast("添加屏蔽成功：" + file.getPath());
+            toast(getResources().getString(R.string.logcat_shield_succeed) + file.getPath());
         } catch (IOException e) {
-            toast("添加屏蔽失败");
+            toast(R.string.logcat_shield_fail);
         } finally {
             if (writer != null) {
                 try {
@@ -440,8 +423,7 @@ public final class LogcatActivity extends Activity
     private void saveLogToFile() {
         BufferedWriter writer = null;
         try {
-
-            File directory = new File(Environment.getExternalStorageDirectory(), "Logcat" + File.separator + getPackageName());
+            File directory = getExternalFilesDir(FILE_TYPE);
             if (!directory.isDirectory()) {
                 directory.delete();
             }
@@ -462,10 +444,10 @@ public final class LogcatActivity extends Activity
             }
             writer.flush();
 
-            toast("保存成功：" + file.getPath());
+            toast(getResources().getString(R.string.logcat_save_succeed) + file.getPath());
         } catch (IOException e) {
             e.printStackTrace();
-            toast("保存失败");
+            toast(getResources().getString(R.string.logcat_save_fail));
         } finally {
             if (writer != null) {
                 try {
@@ -478,8 +460,12 @@ public final class LogcatActivity extends Activity
     /**
      * 吐司提示
      */
+    private void toast(int stringId) {
+        toast(getResources().getString(stringId));
+    }
+
     private void toast(CharSequence text) {
-        new XToast(this)
+        new XToast<>(this)
                 .setView(R.layout.logcat_window_toast)
                 .setDuration(3000)
                 .setGravity(Gravity.CENTER)
@@ -510,34 +496,5 @@ public final class LogcatActivity extends Activity
     protected void onDestroy() {
         super.onDestroy();
         LogcatManager.destroy();
-    }
-
-    /**
-     * 是否有存储权限
-     */
-    private boolean checkPermission() {
-        // 如果当前应用适配的是 Android 11 及以上
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.R) {
-            return Environment.isExternalStorageManager();
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * 申请存储权限
-     */
-    private void requestPermission() {
-        // 如果当前应用适配的是 Android 11 及以上
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.R) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-            intent.setData(Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, 1024);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1024);
-        }
     }
 }

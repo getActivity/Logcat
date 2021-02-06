@@ -7,8 +7,8 @@ android {
         applicationId "com.hjq.logcat.demo"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 92
-        versionName "9.2"
+        versionCode 95
+        versionName "9.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -25,7 +25,7 @@ dependencies {
 
     // 谷歌兼容库：https://developer.android.google.cn/jetpack/androidx/releases/appcompat?hl=zh-cn
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
 
     // 标题栏：https://github.com/getActivity/TitleBar
     implementation 'com.hjq:titlebar:8.2'

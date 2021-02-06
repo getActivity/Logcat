@@ -17,7 +17,7 @@ import com.hjq.xtoast.draggable.SpringDraggable;
  *    time   : 2020/01/24
  *    desc   : 悬浮窗口
  */
-final class FloatingWindow extends XToast implements OnClickListener {
+final class FloatingWindow extends XToast<FloatingWindow> implements OnClickListener<View> {
 
     FloatingWindow(Activity activity) {
         super(activity);

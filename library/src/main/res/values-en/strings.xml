@@ -1,0 +1,27 @@
+<resources>
+    <string name="logcat_search_hint">Please enter what you are looking for</string>
+
+    <string name="logcat_options_copy">Copy log</string>
+    <string name="logcat_options_share">Share log</string>
+    <string name="logcat_options_delete">Delete log</string>
+    <string name="logcat_options_shield">Block log</string>
+
+    <string name="logcat_copy_succeed">Log copied successfully</string>
+    <string name="logcat_copy_fail">Log copy failed</string>
+
+    <string name="logcat_capture">Log capture switch</string>
+    <string name="logcat_save">Save log</string>
+    <string name="logcat_level">Log level filtering</string>
+    <string name="logcat_empty">Clear log</string>
+    <string name="logcat_close">Close display</string>
+
+    <string name="logcat_capture_pause">Log capture is paused</string>
+
+    <string name="logcat_read_config_fail">Failed to read shield configuration</string>
+
+    <string name="logcat_shield_succeed">Add block successfully: </string>
+    <string name="logcat_shield_fail">Failed to add block</string>
+
+    <string name="logcat_save_succeed">Successfully saved: </string>
+    <string name="logcat_save_fail">Save failed</string>
+</resources>

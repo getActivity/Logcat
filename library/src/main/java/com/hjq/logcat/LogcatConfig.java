@@ -28,9 +28,8 @@ final class LogcatConfig {
     static String getLogcatLevel() {
         if (sConfig != null) {
             return sConfig.getString(LOGCAT_LEVEL, "V");
-        } else {
-            return "V";
         }
+        return "V";
     }
 
     static void setLogcatLevel(String level) {
@@ -47,9 +46,8 @@ final class LogcatConfig {
     static String getLogcatText() {
         if(sConfig != null) {
             return sConfig.getString(LOGCAT_TEXT, "");
-        } else {
-            return "";
         }
+        return "";
     }
 
     static void setLogcatText(String keyword) {

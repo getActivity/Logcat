@@ -10,6 +10,7 @@ import android.widget.ListView;
 import com.hjq.xtoast.OnClickListener;
 import com.hjq.xtoast.XToast;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,7 +20,7 @@ import java.util.List;
  *    time   : 2020/01/24
  *    desc   : 列表选择类
  */
-final class ChooseWindow extends XToast implements AdapterView.OnItemClickListener, OnClickListener {
+final class ChooseWindow extends XToast implements AdapterView.OnItemClickListener, OnClickListener<View> {
 
     private final ChooseAdapter mAdapter;
     private OnListener mListener;
@@ -41,6 +42,14 @@ final class ChooseWindow extends XToast implements AdapterView.OnItemClickListen
     @Override
     public void onClick(XToast toast, View view) {
         cancel();
+    }
+
+    ChooseWindow setList(int... stringIds) {
+        List<String> data = new ArrayList<>();
+        for (int stringId : stringIds) {
+            data.add(getContext().getResources().getString(stringId));
+        }
+        return setList(data);
     }
 
     ChooseWindow setList(String... data) {

@@ -11,7 +11,7 @@
 ```groovy
 dependencies {
     // 日志调试框架：https://github.com/getActivity/Logcat
-    debugImplementation 'com.hjq:logcat:9.2'
+    debugImplementation 'com.hjq:logcat:9.5'
 }
 ```
 
@@ -89,6 +89,10 @@ dependencies {
 * Gson 解析容错：[GsonFactory](https://github.com/getActivity/GsonFactory)
 
 #### Android技术讨论Q群：78797078
+
+#### 微信公众号：Android轮子哥
+
+![](https://raw.githubusercontent.com/getActivity/Donate/master/picture/official_ccount.png)
 
 #### 如果您觉得我的开源库帮你节省了大量的开发时间，请扫描下方的二维码随意打赏，要是能打赏个 10.24 :monkey_face:就太:thumbsup:了。您的支持将鼓励我继续创作:octocat:
 

@@ -1,0 +1,27 @@
+<resources>
+    <string name="logcat_search_hint">请输入要查找的内容</string>
+
+    <string name="logcat_options_copy">复制日志</string>
+    <string name="logcat_options_share">分享日志</string>
+    <string name="logcat_options_delete">删除日志</string>
+    <string name="logcat_options_shield">屏蔽日志</string>
+
+    <string name="logcat_copy_succeed">日志复制成功</string>
+    <string name="logcat_copy_fail">日志复制失败</string>
+
+    <string name="logcat_capture">日志捕获开关</string>
+    <string name="logcat_save">保存日志</string>
+    <string name="logcat_level">日志等级过滤</string>
+    <string name="logcat_empty">清空日志</string>
+    <string name="logcat_close">关闭显示</string>
+
+    <string name="logcat_capture_pause">日志捕捉已暂停</string>
+
+    <string name="logcat_read_config_fail">读取屏蔽配置失败</string>
+
+    <string name="logcat_shield_succeed">添加屏蔽成功：</string>
+    <string name="logcat_shield_fail">添加屏蔽失败</string>
+
+    <string name="logcat_save_succeed">保存成功：</string>
+    <string name="logcat_save_fail">保存失败</string>
+</resources>
