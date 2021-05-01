@@ -9,9 +9,23 @@
 #### 集成步骤
 
 ```groovy
+buildscript {
+    ......
+}
+allprojects {
+    repositories {
+        // JitPack 远程仓库：https://jitpack.io
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+* 在项目 app 模块下的 `build.gradle` 文件中加入
+
+```groovy
 dependencies {
     // 日志调试框架：https://github.com/getActivity/Logcat
-    debugImplementation 'com.hjq:logcat:9.5'
+    debugImplementation 'com.github.getActivity:Logcat:9.6'
 }
 ```
 
@@ -88,11 +102,11 @@ dependencies {
 
 * Gson 解析容错：[GsonFactory](https://github.com/getActivity/GsonFactory)
 
-#### Android技术讨论Q群：78797078
-
 #### 微信公众号：Android轮子哥
 
 ![](https://raw.githubusercontent.com/getActivity/Donate/master/picture/official_ccount.png)
+
+#### Android 技术分享 QQ 群：78797078
 
 #### 如果您觉得我的开源库帮你节省了大量的开发时间，请扫描下方的二维码随意打赏，要是能打赏个 10.24 :monkey_face:就太:thumbsup:了。您的支持将鼓励我继续创作:octocat:
 

@@ -1,4 +1,6 @@
 <resources>
+    <string name="logcat_launch_error">参数错误，无法启动 Logcat</string>
+
     <string name="logcat_search_hint">请输入要查找的内容</string>
 
     <string name="logcat_options_copy">复制日志</string>

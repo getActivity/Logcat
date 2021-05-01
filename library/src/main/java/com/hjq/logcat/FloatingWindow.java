@@ -7,7 +7,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.hjq.xtoast.OnClickListener;
 import com.hjq.xtoast.XToast;
 import com.hjq.xtoast.draggable.SpringDraggable;
 
@@ -17,7 +16,7 @@ import com.hjq.xtoast.draggable.SpringDraggable;
  *    time   : 2020/01/24
  *    desc   : 悬浮窗口
  */
-final class FloatingWindow extends XToast<FloatingWindow> implements OnClickListener<View> {
+final class FloatingWindow extends XToast<FloatingWindow> implements XToast.OnClickListener<View> {
 
     FloatingWindow(Activity activity) {
         super(activity);

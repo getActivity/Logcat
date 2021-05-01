@@ -7,10 +7,17 @@ android {
         applicationId "com.hjq.logcat.demo"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 95
-        versionName "9.5"
+        versionCode 96
+        versionName "9.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    // 使用 JDK 1.8
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -28,7 +35,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
 
     // 标题栏：https://github.com/getActivity/TitleBar
-    implementation 'com.hjq:titlebar:8.2'
+    implementation 'com.github.getActivity:TitleBar:8.5'
+
     // 内存泄漏捕捉：https://github.com/square/leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }

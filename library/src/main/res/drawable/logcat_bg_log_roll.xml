@@ -2,7 +2,6 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
         <layer-list>
-            <!-- Shadow -->
             <item android:top="1dp" android:right="1dp">
                 <layer-list>
                     <item>
@@ -223,8 +222,6 @@
                     </item>
                 </layer-list>
             </item>
-
-            <!-- Blue button -->
 
             <item>
                 <shape android:shape="oval">

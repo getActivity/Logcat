@@ -1,18 +1,16 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
 
 android {
 
+    // 资源前缀限制
     resourcePrefix "logcat_"
 
     compileSdkVersion 30
 
     defaultConfig {
         minSdkVersion 14
-        //noinspection ExpiredTargetSdkVersion
-        targetSdkVersion 23
-        versionCode 95
-        versionName "9.5"
+        versionCode 96
+        versionName "9.6"
     }
 
     lintOptions {
@@ -22,16 +20,7 @@ android {
 
 dependencies {
     // 悬浮窗框架：https://github.com/getActivity/XToast
-    implementation 'com.hjq:xtoast:6.6'
-}
-
-publish {
-    userOrg = 'getactivity'
-    groupId = 'com.hjq'
-    artifactId = 'logcat'
-    version = '9.5'
-    description = 'This is to help developers quickly see the logging framework they want'
-    website = "https://github.com/getActivity/Logcat"
+    implementation 'com.github.getActivity:XToast:6.9'
 }
 
 tasks.withType(Javadoc) {

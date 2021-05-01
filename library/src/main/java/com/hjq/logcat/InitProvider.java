@@ -24,7 +24,7 @@ public final class InitProvider extends ContentProvider {
             if (context instanceof Application) {
                 FloatingLifecycle.with((Application) context);
             } else {
-                Toast.makeText(context, "参数错误，无法启动 Logcat", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.logcat_launch_error, Toast.LENGTH_LONG).show();
             }
         }
         return true;
