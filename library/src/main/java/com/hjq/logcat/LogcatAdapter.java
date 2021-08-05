@@ -80,11 +80,6 @@ final class LogcatAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    void removeItem(LogcatInfo item) {
-        mDataSet.remove(item);
-        notifyDataSetChanged();
-    }
-
     /**
      * 清空当前数据
      */
@@ -172,23 +167,14 @@ final class LogcatAdapter extends BaseAdapter {
             mLineView.setVisibility((position == getCount() - 1) ? View.GONE : View.VISIBLE);
 
             if (mContentView.getLineCount() - MAX_LINE > 1) {
+
                 if (mExpandSet.get(position)) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        if (mContentView.getMaxLines() != Integer.MAX_VALUE) {
-                            mContentView.setMaxLines(Integer.MAX_VALUE);
-                            mExpandView.setImageResource(R.drawable.logcat_ic_arrows_up);
-                        }
-                    } else {
+                    if (mContentView.getMaxLines() != Integer.MAX_VALUE) {
                         mContentView.setMaxLines(Integer.MAX_VALUE);
                         mExpandView.setImageResource(R.drawable.logcat_ic_arrows_up);
                     }
                 } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        if (mContentView.getMaxLines() != MAX_LINE) {
-                            mContentView.setMaxLines(MAX_LINE);
-                            mExpandView.setImageResource(R.drawable.logcat_ic_arrows_down);
-                        }
-                    } else {
+                    if (mContentView.getMaxLines() != MAX_LINE) {
                         mContentView.setMaxLines(MAX_LINE);
                         mExpandView.setImageResource(R.drawable.logcat_ic_arrows_down);
                     }

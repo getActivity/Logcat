@@ -15,9 +15,9 @@
 
         <activity
             android:name=".LogcatActivity"
+            android:windowSoftInputMode="stateHidden"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:launchMode="singleInstance"
-            android:screenOrientation="landscape" />
+            android:launchMode="singleInstance" />
 
     </application>
 

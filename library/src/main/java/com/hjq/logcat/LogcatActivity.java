@@ -43,10 +43,13 @@ import java.util.Locale;
  *    time   : 2020/01/24
  *    desc   : Logcat 显示窗口
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public final class LogcatActivity extends Activity
         implements TextWatcher, View.OnLongClickListener, View.OnClickListener,
         CompoundButton.OnCheckedChangeListener, LogcatManager.Callback,
         AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener {
+
+    public static final Charset CHARSET_UTF_8 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? StandardCharsets.UTF_8 : Charset.forName("UTF-8");
 
     private final static String[] ARRAY_LOG_LEVEL = {"Verbose", "Debug", "Info", "Warn", "Error"};
 
@@ -120,7 +123,7 @@ public final class LogcatActivity extends Activity
             public void run() {
                 mListView.setSelection(mAdapter.getCount() - 1);
             }
-        }, 1000);
+        }, 500);
 
         initFilter();
     }
@@ -352,8 +355,7 @@ public final class LogcatActivity extends Activity
         if (file.exists() && file.isFile()) {
             BufferedReader reader = null;
             try {
-                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? StandardCharsets.UTF_8 : Charset.forName("UTF-8")));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), CHARSET_UTF_8));
                 String tag;
                 while ((tag = reader.readLine()) != null) {
                     mTagFilter.add(tag);
@@ -384,8 +386,7 @@ public final class LogcatActivity extends Activity
             if (!file.exists()) {
                 file.createNewFile();
             }
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false),
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? StandardCharsets.UTF_8 : Charset.forName("UTF-8")));
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), CHARSET_UTF_8));
             for (String temp : mTagFilter) {
                 writer.write(temp + "\r\n");
             }
@@ -437,7 +438,7 @@ public final class LogcatActivity extends Activity
             if (!file.exists()) {
                 file.createNewFile();
             }
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), Charset.forName("UTF-8")));
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), CHARSET_UTF_8));
             List<LogcatInfo> data = mAdapter.getData();
             for (LogcatInfo info : data) {
                 writer.write(info.toString().replace("\n", "\r\n") + "\r\n\r\n");
@@ -476,6 +477,8 @@ public final class LogcatActivity extends Activity
 
     @Override
     public void onBackPressed() {
+        // 清除输入焦点
+        mSearchView.clearFocus();
         // 移动到上一个任务栈
         moveTaskToBack(false);
     }

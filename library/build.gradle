@@ -8,19 +8,32 @@ android {
     compileSdkVersion 30
 
     defaultConfig {
-        minSdkVersion 14
-        versionCode 96
-        versionName "9.6"
+        minSdkVersion 16
+        versionCode 98
+        versionName "9.8"
     }
 
     lintOptions {
         abortOnError false
     }
+
+    android.libraryVariants.all { variant ->
+        // aar 输出文件名配置
+        variant.outputs.all { output ->
+            outputFileName = "${rootProject.name}-${android.defaultConfig.versionName}.aar"
+        }
+    }
+}
+
+afterEvaluate {
+    // 排除 BuildConfig.class
+    generateReleaseBuildConfig.enabled = false
+    generateDebugBuildConfig.enabled = false
 }
 
 dependencies {
     // 悬浮窗框架：https://github.com/getActivity/XToast
-    implementation 'com.github.getActivity:XToast:6.9'
+    implementation 'com.github.getActivity:XToast:8.1'
 }
 
 tasks.withType(Javadoc) {

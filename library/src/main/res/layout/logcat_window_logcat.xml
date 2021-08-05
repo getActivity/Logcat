@@ -19,8 +19,8 @@
             android:id="@+id/iv_log_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:button="@drawable/logcat_bg_log_check"
             android:checked="false" />
 
@@ -28,16 +28,16 @@
             android:id="@+id/iv_log_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:src="@drawable/logcat_ic_save" />
 
         <TextView
             android:id="@+id/tv_log_level"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:background="@drawable/logcat_bg_log_frame"
             android:drawableStart="@drawable/logcat_ic_filter"
             android:drawableLeft="@drawable/logcat_ic_filter"
@@ -48,19 +48,19 @@
             android:paddingBottom="8dp"
             android:text="Verbose"
             android:textColor="@android:color/white"
-            android:textSize="14sp" />
+            android:textSize="13sp" />
 
         <FrameLayout
             android:layout_width="0px"
             android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:layout_weight="1">
 
             <EditText
                 android:id="@+id/et_log_search"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
                 android:background="@drawable/logcat_bg_log_frame"
                 android:cursorVisible="true"
                 android:drawableStart="@drawable/logcat_ic_search"
@@ -87,10 +87,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
                 android:src="@drawable/logcat_ic_empty"
                 android:visibility="gone"
                 tools:visibility="visible" />
@@ -101,16 +101,16 @@
             android:id="@+id/iv_log_clean"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:src="@drawable/logcat_ic_clear" />
 
         <ImageView
             android:id="@+id/iv_log_close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:src="@drawable/logcat_ic_close" />
 
     </LinearLayout>

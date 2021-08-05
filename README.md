@@ -1,6 +1,6 @@
-# 日志调试框架
+# 日志查看框架
 
-* 码云地址：[Gitee](https://gitee.com/getActivity/Logcat)
+* 项目地址：[Github](https://github.com/getActivity/Logcat)、[码云](https://gitee.com/getActivity/Logcat)
 
 * [点击此处下载Demo](Logcat.apk)
 
@@ -10,11 +10,12 @@
 
 ```groovy
 buildscript {
-    ......
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
 }
 allprojects {
     repositories {
-        // JitPack 远程仓库：https://jitpack.io
         maven { url 'https://jitpack.io' }
     }
 }
@@ -25,7 +26,7 @@ allprojects {
 ```groovy
 dependencies {
     // 日志调试框架：https://github.com/getActivity/Logcat
-    debugImplementation 'com.github.getActivity:Logcat:9.6'
+    debugImplementation 'com.github.getActivity:Logcat:9.8'
 }
 ```
 
@@ -99,6 +100,8 @@ dependencies {
 * 国际化框架：[MultiLanguages](https://github.com/getActivity/MultiLanguages)
 
 * 悬浮窗框架：[XToast](https://github.com/getActivity/XToast)
+
+* Shape 框架：[ShapeView](https://github.com/getActivity/ShapeView)
 
 * Gson 解析容错：[GsonFactory](https://github.com/getActivity/GsonFactory)
 
