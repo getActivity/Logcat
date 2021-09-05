@@ -47,7 +47,7 @@ import java.util.Locale;
 public final class LogcatActivity extends Activity
         implements TextWatcher, View.OnLongClickListener, View.OnClickListener,
         CompoundButton.OnCheckedChangeListener, LogcatManager.Callback,
-        AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener {
+        AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener, Runnable {
 
     public static final Charset CHARSET_UTF_8 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? StandardCharsets.UTF_8 : Charset.forName("UTF-8");
 
@@ -262,7 +262,13 @@ public final class LogcatActivity extends Activity
 
     @Override
     public void afterTextChanged(Editable s) {
-        String keyword = s.toString().trim();
+        mSearchView.removeCallbacks(this);
+        mSearchView.postDelayed(this, 600);
+    }
+
+    @Override
+    public void run() {
+        String keyword = mSearchView.getText().toString().trim();
         LogcatConfig.setLogcatText(keyword);
         mAdapter.setKeyword(keyword);
         mAdapter.clearData();
@@ -467,7 +473,7 @@ public final class LogcatActivity extends Activity
 
     private void toast(CharSequence text) {
         new XToast<>(this)
-                .setView(R.layout.logcat_window_toast)
+                .setContentView(R.layout.logcat_window_toast)
                 .setDuration(3000)
                 .setGravity(Gravity.CENTER)
                 .setAnimStyle(android.R.style.Animation_Toast)
@@ -499,5 +505,6 @@ public final class LogcatActivity extends Activity
     protected void onDestroy() {
         super.onDestroy();
         LogcatManager.destroy();
+        mSearchView.removeCallbacks(this);
     }
 }

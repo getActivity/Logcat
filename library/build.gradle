@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         minSdkVersion 16
-        versionCode 98
-        versionName "9.8"
+        versionCode 99
+        versionName "9.9"
     }
 
     lintOptions {
@@ -33,7 +33,7 @@ afterEvaluate {
 
 dependencies {
     // 悬浮窗框架：https://github.com/getActivity/XToast
-    implementation 'com.github.getActivity:XToast:8.1'
+    implementation 'com.github.getActivity:XToast:8.2'
 }
 
 tasks.withType(Javadoc) {

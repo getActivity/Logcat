@@ -68,7 +68,6 @@
                 android:drawablePadding="15dp"
                 android:hint="@string/logcat_search_hint"
                 android:imeOptions="actionSearch"
-                android:inputType="textCapCharacters"
                 android:paddingStart="15dp"
                 android:paddingLeft="15dp"
                 android:paddingTop="8dp"

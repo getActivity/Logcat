@@ -26,11 +26,11 @@ final class ChooseWindow extends XToast<ChooseWindow> implements AdapterView.OnI
 
     ChooseWindow(Activity activity) {
         super(activity);
-        setView(R.layout.logcat_window_choose);
+        setContentView(R.layout.logcat_window_choose);
         setGravity(Gravity.CENTER);
         clearWindowFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
-        ListView listView = (ListView) findViewById(R.id.lv_choose_list);
+        ListView listView = findViewById(R.id.lv_choose_list);
         mAdapter = new ChooseAdapter();
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(this);

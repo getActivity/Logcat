@@ -26,7 +26,7 @@ allprojects {
 ```groovy
 dependencies {
     // 日志调试框架：https://github.com/getActivity/Logcat
-    debugImplementation 'com.github.getActivity:Logcat:9.8'
+    debugImplementation 'com.github.getActivity:Logcat:9.9'
 }
 ```
 

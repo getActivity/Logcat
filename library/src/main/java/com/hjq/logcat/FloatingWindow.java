@@ -24,7 +24,7 @@ final class FloatingWindow extends XToast<FloatingWindow> implements XToast.OnCl
         ImageView imageView = new ImageView(activity.getApplicationContext());
         imageView.setId(android.R.id.icon);
         imageView.setImageResource(R.drawable.logcat_selector_floating);
-        setView(imageView);
+        setContentView(imageView);
 
         int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 45, activity.getResources().getDisplayMetrics());
         setWidth(size);
