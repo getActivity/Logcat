@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "com.hjq.logcat.demo"
         minSdkVersion 16
-        targetSdkVersion 30
-        versionCode 99
-        versionName "9.9"
+        targetSdkVersion 31
+        versionCode 1000
+        versionName "10.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -51,16 +51,21 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    // 依赖 libs 目录下所有的 jar 和 aar 包
+    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+
     debugImplementation project(':library')
 
-    // AppCompat 库：https://developer.android.google.cn/jetpack/androidx/releases/appcompat?hl=zh-cn
-    implementation 'androidx.appcompat:appcompat:1.3.0'
-    // Material 库：https://github.com/material-components/material-components-android
-    implementation 'com.google.android.material:material:1.3.0'
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:26.0.0'
+    //noinspection GradleCompatible
+    implementation 'com.android.support:design:26.0.0'
 
     // 标题栏：https://github.com/getActivity/TitleBar
-    implementation 'com.github.getActivity:TitleBar:8.6'
+    implementation 'com.github.getActivity:TitleBar:9.3'
+
+    // 吐司框架：https://github.com/getActivity/ToastUtils
+    implementation 'com.github.getActivity:ToastUtils:10.0'
 
     // 内存泄漏捕捉：https://github.com/square/leakcanary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'

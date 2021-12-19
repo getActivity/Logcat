@@ -27,9 +27,9 @@ final class LogcatConfig {
 
     static String getLogcatLevel() {
         if (sConfig != null) {
-            return sConfig.getString(LOGCAT_LEVEL, "V");
+            return sConfig.getString(LOGCAT_LEVEL, LogLevel.VERBOSE);
         }
-        return "V";
+        return LogLevel.VERBOSE;
     }
 
     static void setLogcatLevel(String level) {

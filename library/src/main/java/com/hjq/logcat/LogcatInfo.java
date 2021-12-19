@@ -12,7 +12,9 @@ import java.util.regex.Pattern;
  */
 final class LogcatInfo {
 
-    private static final String LINE_SPACE = "\n    ";
+    static final String SPACE = "  ";
+
+    static final String LINE_SPACE = "\n" + SPACE;
 
     private static final Pattern PATTERN = Pattern.compile(
             "([0-9^-]+-[0-9^ ]+\\s[0-9^:]+:[0-9^:]+\\.[0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s([VDIWEF])\\s([^\\s]*)\\s*:\\s(.*)");
@@ -78,6 +80,6 @@ final class LogcatInfo {
 
     @Override
     public String toString() {
-        return String.format("%s   %s   %s", time, tag, log);
+        return String.format("%s" + SPACE + "%s" + SPACE + "%s", time, tag, log);
     }
 }

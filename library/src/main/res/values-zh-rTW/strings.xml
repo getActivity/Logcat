@@ -1,5 +1,11 @@
 <resources>
+
     <string name="logcat_launch_error">參數錯誤，無法啓動 Logcat</string>
+
+    <string name="logcat_notify_title">Logcat</string>
+    <string name="logcat_notify_content">點擊進入《 %s 》日志調試界面</string>
+    <string name="logcat_notify_channel_name">Logcat 通知</string>
+    <string name="logcat_notify_channel_description">可用於查看當前應用程序的日志</string>
 
     <string name="logcat_search_hint">請輸入要查找的內容</string>
 

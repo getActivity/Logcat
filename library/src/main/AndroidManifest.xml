@@ -8,7 +8,7 @@
     <application>
 
         <provider
-            android:name=".InitProvider"
+            android:name=".LogcatProvider"
             android:authorities="${applicationId}.log.provider"
             android:exported="false"
             android:initOrder="110" />
@@ -18,6 +18,8 @@
             android:windowSoftInputMode="stateHidden"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleInstance" />
+
+        <service android:name=".LogcatService" />
 
     </application>
 

@@ -3,16 +3,16 @@ package com.hjq.logcat.demo;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.hjq.bar.OnTitleBarListener;
 import com.hjq.bar.TitleBar;
+import com.hjq.toast.ToastUtils;
 
 public class MainActivity extends AppCompatActivity implements OnTitleBarListener {
 
@@ -31,6 +31,14 @@ public class MainActivity extends AppCompatActivity implements OnTitleBarListene
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.setWebChromeClient(new MyWebChromeClient());
         mWebView.loadUrl("https://github.com/getActivity/Logcat");
+
+        if (NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+            if (!ToastUtils.isInit()) {
+                ToastUtils.init(getApplication());
+            }
+
+            ToastUtils.show("请点击通知栏入口进入日志查看页面");
+        }
     }
 
     private class MyWebChromeClient extends WebChromeClient {
@@ -42,23 +50,13 @@ public class MainActivity extends AppCompatActivity implements OnTitleBarListene
     }
 
     @Override
-    public void onLeftClick(View v) {
-
-    }
-
-    @Override
-    public void onTitleClick(View v) {
+    public void onTitleClick(TitleBar titleBar) {
         String url = mWebView.getUrl();
         if (url != null && !"".equals(url)) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
-    }
-
-    @Override
-    public void onRightClick(View v) {
-
     }
 
     @Override

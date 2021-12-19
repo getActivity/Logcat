@@ -1,5 +1,11 @@
 <resources>
+
     <string name="logcat_launch_error">Error parameter. Unable to start Logcat</string>
+
+    <string name="logcat_notify_title">Logcat</string>
+    <string name="logcat_notify_content">Click to enter the《 %s 》log debugging interface</string>
+    <string name="logcat_notify_channel_name">Logcat notification</string>
+    <string name="logcat_notify_channel_description">Can be used to view logs for the current application</string>
 
     <string name="logcat_search_hint">Please enter what you are looking for</string>
 
