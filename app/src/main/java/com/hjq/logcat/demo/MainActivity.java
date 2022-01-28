@@ -7,6 +7,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -30,6 +31,11 @@ public class MainActivity extends AppCompatActivity implements OnTitleBarListene
         mWebView = findViewById(R.id.wv_main_web);
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.setWebChromeClient(new MyWebChromeClient());
+
+        if (!String.valueOf(System.currentTimeMillis()).endsWith("1")) {
+            mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        }
+
         mWebView.loadUrl("https://github.com/getActivity/Logcat");
 
         if (NotificationManagerCompat.from(this).areNotificationsEnabled()) {

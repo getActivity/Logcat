@@ -1,6 +1,7 @@
 package com.hjq.logcat;
 
 import android.app.Activity;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,7 +20,8 @@ import java.util.List;
  *    time   : 2020/01/24
  *    desc   : 列表选择类
  */
-final class ChooseWindow extends XToast<ChooseWindow> implements AdapterView.OnItemClickListener, XToast.OnClickListener<View> {
+final class ChooseWindow extends XToast<ChooseWindow> implements
+        AdapterView.OnItemClickListener, XToast.OnClickListener<View> {
 
     private final ChooseAdapter mAdapter;
     private OnListener mListener;
@@ -28,6 +30,10 @@ final class ChooseWindow extends XToast<ChooseWindow> implements AdapterView.OnI
         super(activity);
         setContentView(R.layout.logcat_window_choose);
         setGravity(Gravity.CENTER);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // 设置沉浸式状态栏
+            addWindowFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
         clearWindowFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
         ListView listView = findViewById(R.id.lv_choose_list);

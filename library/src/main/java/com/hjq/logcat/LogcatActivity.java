@@ -455,6 +455,10 @@ public final class LogcatActivity extends AppCompatActivity
             if (window != null) {
                 // 在竖屏的状态下显示状态栏和导航栏
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    // 实现状态栏图标和文字颜色为亮色
+                    window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                }
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 if (window != null) {

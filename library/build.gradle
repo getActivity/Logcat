@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         minSdkVersion 16
-        versionCode 1000
-        versionName "10.0"
+        versionCode 1020
+        versionName "10.2"
     }
 
     lintOptions {

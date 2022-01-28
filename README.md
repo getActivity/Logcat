@@ -4,7 +4,7 @@
 
 * 项目地址：[Github](https://github.com/getActivity/Logcat)、[码云](https://gitee.com/getActivity/Logcat)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/Logcat/releases/download/10.0/Logcat.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/Logcat/releases/download/10.2/Logcat.apk)
 
 ![](picture/demo_code.png)
 
@@ -53,7 +53,7 @@ dependencyResolutionManagement {
 ```groovy
 dependencies {
     // 日志调试框架：https://github.com/getActivity/Logcat
-    debugImplementation 'com.github.getActivity:Logcat:10.0'
+    debugImplementation 'com.github.getActivity:Logcat:10.2'
 }
 ```
 
@@ -61,7 +61,7 @@ dependencies {
 
 * 如果项目是基于 **AndroidX** 包，请在项目 `gradle.properties` 文件中加入
 
-```groovy
+```text
 # 表示将第三方库迁移到 AndroidX
 android.enableJetifier = true
 ```
@@ -106,9 +106,24 @@ android.enableJetifier = true
 </manifest>
 ```
 
+#### 方向配置
+
+* `LogcatActivity` 默认是跟随手机屏幕方向的，如果你需要固定竖屏方向，那么需要在你的清单文件中加入此配置：
+
+```xml
+<activity
+    android:name="com.hjq.logcat.LogcatActivity"
+    android:configChanges="orientation|screenSize|keyboardHidden"
+    android:launchMode="singleInstance"
+    android:screenOrientation="portrait"
+    android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+    android:windowSoftInputMode="stateHidden"
+    tools:node="replace" />
+```
+
 #### 日志颜色个性化
 
-* 在项目的 `values/color.xml` 中加入你喜欢的配色，例如
+* 在项目的 `values/color.xml` 中加入你喜欢的配色，例如：
 
 ```xml
 <color name="logcat_level_verbose_color">#FFBBBBBB</color>
@@ -121,7 +136,7 @@ android.enableJetifier = true
 
 #### 过滤日志
 
-* 在项目的 `values/string.xml` 中加入你要过滤的日志 TAG，例如
+* 在项目的 `values/string.xml` 中加入你要过滤的日志 TAG，例如：
 
 ```xml
 <string-array name="logcat_filter_list" tools:ignore="ExtraTranslation">

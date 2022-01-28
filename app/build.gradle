@@ -7,8 +7,8 @@ android {
         applicationId "com.hjq.logcat.demo"
         minSdkVersion 16
         targetSdkVersion 31
-        versionCode 1000
-        versionName "10.0"
+        versionCode 1020
+        versionName "10.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -65,8 +65,8 @@ dependencies {
     implementation 'com.github.getActivity:TitleBar:9.3'
 
     // 吐司框架：https://github.com/getActivity/ToastUtils
-    implementation 'com.github.getActivity:ToastUtils:10.0'
+    implementation 'com.github.getActivity:ToastUtils:10.2'
 
     // 内存泄漏捕捉：https://github.com/square/leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.8.1'
 }
