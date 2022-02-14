@@ -4,7 +4,7 @@
 
 * 项目地址：[Github](https://github.com/getActivity/Logcat)、[码云](https://gitee.com/getActivity/Logcat)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/Logcat/releases/download/10.2/Logcat.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/Logcat/releases/download/10.3/Logcat.apk)
 
 ![](picture/demo_code.png)
 
@@ -53,7 +53,7 @@ dependencyResolutionManagement {
 ```groovy
 dependencies {
     // 日志调试框架：https://github.com/getActivity/Logcat
-    debugImplementation 'com.github.getActivity:Logcat:10.2'
+    debugImplementation 'com.github.getActivity:Logcat:10.3'
 }
 ```
 
@@ -275,7 +275,7 @@ android.enableJetifier = true
 
 ![](https://raw.githubusercontent.com/getActivity/Donate/master/picture/official_ccount.png)
 
-#### Android 技术分享 QQ 群：78797078
+#### Android 技术 Q 群：10047167
 
 #### 如果您觉得我的开源库帮你节省了大量的开发时间，请扫描下方的二维码随意打赏，要是能打赏个 10.24 :monkey_face:就太:thumbsup:了。您的支持将鼓励我继续创作:octocat:
 

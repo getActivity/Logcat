@@ -32,9 +32,10 @@ import java.util.regex.Pattern;
  *    time   : 2020/01/24
  *    desc   : 日志列表适配器
  */
+@SuppressLint("NotifyDataSetChanged")
 final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder> {
 
-    /** 最大日志数量限制（避免日志过多导致 OOM） */
+    /** 最大日志数量限制（避免日志过多导致出现 OOM） */
     private static final int LOG_MAX_COUNT = 1000;
     /** 达到阈值时删除的日志数量 */
     private static final int LOG_REMOVE_COUNT = LOG_MAX_COUNT / 5;
@@ -202,6 +203,12 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
      */
     void setOnItemLongClickListener(@Nullable OnItemLongClickListener listener) {
         mItemLongClickListener = listener;
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(ViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.onDetached();
     }
 
     @Override
@@ -379,7 +386,14 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
         }
 
         /**
-         * ViewHolder 回收回调
+         * ViewHolder 解绑时回调
+         */
+        public void onDetached() {
+            mHorizontalScrollView.removeCallbacks(mScrollRunnable);
+        }
+
+        /**
+         * ViewHolder 回收时回调
          */
         public void onRecycled() {
             mHorizontalScrollView.removeCallbacks(mScrollRunnable);
@@ -398,7 +412,11 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
                     // java.lang.ArrayIndexOutOfBoundsException: length=163; index=-1
                     return;
                 }
-                LogcatInfo info = getItem(getLayoutPosition());
+                if (layoutPosition >= getItemCount()) {
+                    // 避免数组出现越界
+                    return;
+                }
+                LogcatInfo info = getItem(layoutPosition);
                 int scrollX = mScrollXSet.get(info.hashCode());
                 if (mHorizontalScrollView.getScrollX() == scrollX) {
                     return;
