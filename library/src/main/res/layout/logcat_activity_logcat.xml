@@ -41,6 +41,7 @@
                 android:src="@drawable/logcat_ic_save" />
 
             <LinearLayout
+                android:id="@+id/ll_log_level"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"

@@ -14,6 +14,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
@@ -40,11 +41,13 @@ public final class LogcatActivity extends AppCompatActivity
         LogcatAdapter.OnItemLongClickListener, LogcatAdapter.OnItemClickListener {
 
     private final static String[] ARRAY_LOG_LEVEL = {"Verbose", "Debug", "Info", "Warn", "Error"};
+    private final static String[] ARRAY_LOG_LEVEL_PORTRAIT = {"V", "D", "I", "W", "E"};
 
     private View mRootView;
     private View mBarView;
     private CheckBox mCheckBox;
     private View mSaveView;
+    private ViewGroup mLevelLayout;
     private TextView mLevelView;
     private EditText mInputView;
     private ImageView mIconView;
@@ -76,6 +79,7 @@ public final class LogcatActivity extends AppCompatActivity
         mBarView = findViewById(R.id.ll_log_bar);
         mCheckBox = findViewById(R.id.cb_log_switch);
         mSaveView = findViewById(R.id.iv_log_save);
+        mLevelLayout = findViewById(R.id.ll_log_level);
         mLevelView = findViewById(R.id.tv_log_level);
         mInputView = findViewById(R.id.et_log_search_input);
         mIconView = findViewById(R.id.iv_log_search_icon);
@@ -84,7 +88,7 @@ public final class LogcatActivity extends AppCompatActivity
         mRecyclerView = findViewById(R.id.lv_log_logcat_list);
         mDownView = findViewById(R.id.ib_log_logcat_down);
 
-        mAdapter = new LogcatAdapter();
+        mAdapter = new LogcatAdapter(this);
         mAdapter.setOnItemClickListener(this);
         mAdapter.setOnItemLongClickListener(this);
         mRecyclerView.setAnimation(null);
@@ -98,7 +102,7 @@ public final class LogcatActivity extends AppCompatActivity
         setLogLevel(LogcatConfig.getLogcatLevel());
 
         mSaveView.setOnClickListener(this);
-        mLevelView.setOnClickListener(this);
+        mLevelLayout.setOnClickListener(this);
         mIconView.setOnClickListener(this);
         mClearView.setOnClickListener(this);
         mHideView.setOnClickListener(this);
@@ -106,7 +110,7 @@ public final class LogcatActivity extends AppCompatActivity
 
         mSaveView.setOnLongClickListener(this);
         mCheckBox.setOnLongClickListener(this);
-        mLevelView.setOnLongClickListener(this);
+        mLevelLayout.setOnLongClickListener(this);
         mClearView.setOnLongClickListener(this);
         mHideView.setOnLongClickListener(this);
 
@@ -126,13 +130,15 @@ public final class LogcatActivity extends AppCompatActivity
 
     @Override
     public void onReceiveLog(LogcatInfo info) {
-        // 这个 Tag 必须不在过滤列表中，并且这个日志是当前应用打印的
-        if (Integer.parseInt(info.getPid()) != android.os.Process.myPid()) {
+        // 这个日志是当前进程打印的
+        // if (Integer.parseInt(info.getPid()) != android.os.Process.myPid()) {
+        //    return;
+        // }
+        // 这个 Tag 必须不在过滤列表中
+        if (mTagFilter.contains(info.getTag())) {
             return;
         }
-        if (!mTagFilter.contains(info.getTag())) {
-            mRecyclerView.post(new LogRunnable(info));
-        }
+        mRecyclerView.post(new LogRunnable(info));
     }
 
     @Override
@@ -161,7 +167,7 @@ public final class LogcatActivity extends AppCompatActivity
                 e.printStackTrace();
                 LogcatUtils.toast(this, getResources().getString(R.string.logcat_save_fail));
             }
-        } else if (v == mLevelView) {
+        } else if (v == mLevelLayout) {
             new ChooseWindow(this)
                     .setList(ARRAY_LOG_LEVEL)
                     .setListener(new ChooseWindow.OnListener() {
@@ -248,19 +254,10 @@ public final class LogcatActivity extends AppCompatActivity
                     public void onSelected(final int location) {
                         switch (location) {
                             case 0:
-                                ClipboardManager manager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                if (manager != null) {
-                                    manager.setPrimaryClip(ClipData.newPlainText("log", mAdapter.getItem(position).getLog()));
-                                    LogcatUtils.toast(LogcatActivity.this, R.string.logcat_copy_succeed);
-                                } else {
-                                    LogcatUtils.toast(LogcatActivity.this, R.string.logcat_copy_fail);
-                                }
+                                copyLog(position);
                                 break;
                             case 1:
-                                Intent intent = new Intent(Intent.ACTION_SEND);
-                                intent.setType("text/plain");
-                                intent.putExtra(Intent.EXTRA_TEXT, mAdapter.getItem(position).getLog());
-                                startActivity(Intent.createChooser(intent, getResources().getString(R.string.logcat_options_share)));
+                                shareLog(position);
                                 break;
                             case 2:
                                 mAdapter.removeItem(position);
@@ -276,8 +273,26 @@ public final class LogcatActivity extends AppCompatActivity
                 .show();
     }
 
+    private void copyLog(int position) {
+        ClipboardManager manager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (manager != null) {
+            manager.setPrimaryClip(ClipData.newPlainText("log", mAdapter.getItem(position).getContent()));
+            LogcatUtils.toast(LogcatActivity.this, R.string.logcat_copy_succeed);
+        } else {
+            LogcatUtils.toast(LogcatActivity.this, R.string.logcat_copy_fail);
+        }
+    }
+
+    private void shareLog(int position) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, mAdapter.getItem(position).getContent());
+        startActivity(Intent.createChooser(intent, getResources().getString(R.string.logcat_options_share)));
+    }
+
     private void setLogLevel(String level) {
         if (level.equals(mLogLevel)) {
+            refreshLogLevelLayout();
             return;
         }
 
@@ -285,21 +300,31 @@ public final class LogcatActivity extends AppCompatActivity
         mAdapter.setLogLevel(level);
         LogcatConfig.setLogcatLevel(level);
         afterTextChanged(mInputView.getText());
-        switch (level) {
+        refreshLogLevelLayout();
+    }
+
+    private void refreshLogLevelLayout() {
+        String[] arrayLogLevel;
+        if (LogcatUtils.isPortrait(this)) {
+            arrayLogLevel = ARRAY_LOG_LEVEL_PORTRAIT;
+        } else {
+            arrayLogLevel = ARRAY_LOG_LEVEL;
+        }
+        switch (mLogLevel) {
             case LogLevel.VERBOSE:
-                mLevelView.setText(ARRAY_LOG_LEVEL[0]);
+                mLevelView.setText(arrayLogLevel[0]);
                 break;
             case LogLevel.DEBUG:
-                mLevelView.setText(ARRAY_LOG_LEVEL[1]);
+                mLevelView.setText(arrayLogLevel[1]);
                 break;
             case LogLevel.INFO:
-                mLevelView.setText(ARRAY_LOG_LEVEL[2]);
+                mLevelView.setText(arrayLogLevel[2]);
                 break;
             case LogLevel.WARN:
-                mLevelView.setText(ARRAY_LOG_LEVEL[3]);
+                mLevelView.setText(arrayLogLevel[3]);
                 break;
             case LogLevel.ERROR:
-                mLevelView.setText(ARRAY_LOG_LEVEL[4]);
+                mLevelView.setText(arrayLogLevel[4]);
                 break;
             default:
                 break;
@@ -414,10 +439,11 @@ public final class LogcatActivity extends AppCompatActivity
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        refreshLayout();
-        if (mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
+        refreshLogLevelLayout();
+        if (mAdapter == null) {
+            return;
         }
+        mAdapter.notifyDataSetChanged();
     }
 
     private void showSearchKeyword() {

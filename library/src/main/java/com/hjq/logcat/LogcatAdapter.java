@@ -1,6 +1,7 @@
 package com.hjq.logcat;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -49,6 +50,8 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
     private final List<LogcatInfo> mAllData = new ArrayList<>();
     private List<LogcatInfo> mShowData = mAllData;
 
+    private Context mContext;
+
     private String mKeyword = "";
     private String mLogLevel = LogLevel.VERBOSE;
 
@@ -58,6 +61,10 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
     /** 条目长按监听器 */
     @Nullable
     private OnItemLongClickListener mItemLongClickListener;
+
+    public LogcatAdapter(Context context) {
+        mContext = context;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -96,7 +103,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
             if (info.getLevel().equals(lastInfo.getLevel()) &&
                     info.getTag().equals(lastInfo.getTag())) {
                 // 追加日志
-                lastInfo.addLog(info.getLog());
+                lastInfo.addLogContent(info.getContent());
                 notifyItemChanged(mShowData.size() - 1);
                 return;
             }
@@ -187,7 +194,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
     }
 
     private boolean isConform(LogcatInfo info) {
-        return (TextUtils.isEmpty(mKeyword) || info.getLog().contains(mKeyword)) &&
+        return (TextUtils.isEmpty(mKeyword) || info.toString(mContext).contains(mKeyword)) &&
                 (LogLevel.VERBOSE.equals(mLogLevel) || info.getLevel().equals(mLogLevel));
     }
 
@@ -285,15 +292,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
         }
 
         private void onBindView(LogcatInfo info, int position) {
-            String content;
-            if (LogcatUtils.isPortrait(itemView.getContext())) {
-                String log = info.getLog();
-                content = String.format("%s" + LogcatInfo.SPACE + "%s" +
-                        (log.startsWith("\n") ? LogcatInfo.SPACE : "\n")
-                        + "%s", info.getTime(), info.getTag(), log);
-            } else {
-                content = info.toString();
-            }
+            String content = info.toString(mContext);
             SpannableString spannable = new SpannableString(content);
             if (mKeyword != null && mKeyword.length() > 0) {
                 int index = content.indexOf(mKeyword);

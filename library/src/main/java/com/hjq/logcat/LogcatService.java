@@ -29,12 +29,14 @@ public final class LogcatService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Intent notificationIntent = new Intent(this, LogcatActivity.class);
-        int pendingIntentFlag = 0;
+        int pendingIntentFlag;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // Targeting S+ (version 31 and above) requires that one of FLAG_IMMUTABLE or FLAG_MUTABLE be specified when creating a PendingIntent.
             // Strongly consider using FLAG_IMMUTABLE, only use FLAG_MUTABLE if some functionality depends on the PendingIntent being mutable, e.g.
             // if it needs to be used with inline replies or bubbles.
             pendingIntentFlag = PendingIntent.FLAG_MUTABLE;
+        } else {
+            pendingIntentFlag = PendingIntent.FLAG_UPDATE_CURRENT;
         }
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, pendingIntentFlag);
 

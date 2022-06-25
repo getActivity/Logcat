@@ -1,5 +1,7 @@
 package com.hjq.logcat;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,7 +19,9 @@ final class LogcatInfo {
     static final String LINE_SPACE = "\n" + SPACE;
 
     private static final Pattern PATTERN = Pattern.compile(
-            "([0-9^-]+-[0-9^ ]+\\s[0-9^:]+:[0-9^:]+\\.[0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s([VDIWEF])\\s([^\\s]*)\\s*:\\s(.*)");
+            //(          05-19 23:59:18.383                 )    (   3177  ) (   3258  ) (     I    ) (   XLog  )    ( 我是日志内容 )
+            //(             time regex                      )    (pid regex) (tid regex) ( log level) ( log tag )    ( log content )
+            "([0-9^-]+-[0-9^ ]+\\s[0-9^:]+:[0-9^:]+\\.[0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s([VDIWEF])\\s([^:&&\\s]*):\\s(.*)");
 
     static final ArrayList<String> IGNORED_LOG = new ArrayList<String>() {{
         add("--------- beginning of crash");
@@ -27,18 +31,19 @@ final class LogcatInfo {
 
     /** 时间 */
     private String time;
+    /** 线程 id */
+    private String tid;
+    /** 进程 id */
+    private String pid;
     /** 等级 */
     private String level;
     /** 标记 */
     private String tag;
     /** 内容 */
-    private String log;
-    /** 进程id */
-    private String pid;
+    private String content;
 
     static LogcatInfo create(String line) {
         Matcher matcher = PATTERN.matcher(line);
-        // 判断日志格式是否合法（目前发现华为手机有在日志的 TAG 中加空格导致识别不出来，这种无法做兼容）
         if (!matcher.find()) {
             return null;
         }
@@ -46,9 +51,10 @@ final class LogcatInfo {
         LogcatInfo info = new LogcatInfo();
         info.time = matcher.group(1);
         info.pid = matcher.group(2);
+        info.tid = matcher.group(3);
         info.level = matcher.group(4);
         info.tag = matcher.group(5);
-        info.log = matcher.group(6);
+        info.content = matcher.group(6);
         return info;
     }
 
@@ -56,6 +62,14 @@ final class LogcatInfo {
 
     String getTime() {
         return time;
+    }
+
+    String getPid() {
+        return pid;
+    }
+
+    String getTid() {
+        return tid;
     }
 
     String getLevel() {
@@ -66,20 +80,30 @@ final class LogcatInfo {
         return tag;
     }
 
-    String getLog() {
-        return log;
+    String getContent() {
+        return content;
     }
 
-    String getPid() {
-        return pid;
-    }
-
-    void addLog(String text) {
-        log = (log.startsWith(LINE_SPACE) ? "" : LINE_SPACE) + log + LINE_SPACE + text;
+    /**
+     * 追加日志内容
+     */
+    void addLogContent(String text) {
+        content = (content.startsWith(LINE_SPACE) ? "" : LINE_SPACE) + content + LINE_SPACE + text;
     }
 
     @Override
     public String toString() {
-        return String.format("%s" + SPACE + "%s" + SPACE + "%s", time, tag, log);
+        return String.format("%s" + SPACE + "%s" + SPACE + "%s", time, tag, content);
+    }
+
+    public String toString(Context context) {
+        if (!LogcatUtils.isPortrait(context)) {
+            return toString();
+        }
+
+        String log = getContent();
+        return String.format("%s" + LogcatInfo.SPACE + "%s" +
+                (log.startsWith("\n") ? LogcatInfo.SPACE : "\n")
+                + "%s", getTime(), getTag(), log);
     }
 }

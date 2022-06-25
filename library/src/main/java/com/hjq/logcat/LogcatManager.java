@@ -82,7 +82,11 @@ final class LogcatManager {
         public void run() {
             BufferedReader reader = null;
             try {
+                // Process process = Runtime.getRuntime().exec("/system/bin/logcat -b " + "main -P '\"/" + android.os.Process.myPid() + " 10708\"'");
+                // Process process = Runtime.getRuntime().exec("/system/bin/logcat -b all -v uid");
+                // Process process = Runtime.getRuntime().exec("logcat -b all -v uid");
                 Process process = new ProcessBuilder("logcat", "-v", "threadtime").start();
+
                 reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 String line;
                 while ((line = reader.readLine()) != null) {
