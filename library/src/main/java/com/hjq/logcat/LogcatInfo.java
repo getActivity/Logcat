@@ -21,7 +21,7 @@ final class LogcatInfo {
     private static final Pattern PATTERN = Pattern.compile(
             //(          05-19 23:59:18.383                 )    (   3177  ) (   3258  ) (     I    ) (   XLog  )    ( 我是日志内容 )
             //(             time regex                      )    (pid regex) (tid regex) ( log level) ( log tag )    ( log content )
-            "([0-9^-]+-[0-9^ ]+\\s[0-9^:]+:[0-9^:]+\\.[0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s([VDIWEF])\\s([^:&&\\s]*):\\s(.*)");
+            "([0-9^-]+-[0-9^ ]+\\s[0-9^:]+:[0-9^:]+\\.[0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s([VDIWEF])\\s([^:]*):\\s(.*)");
 
     static final ArrayList<String> IGNORED_LOG = new ArrayList<String>() {{
         add("--------- beginning of crash");

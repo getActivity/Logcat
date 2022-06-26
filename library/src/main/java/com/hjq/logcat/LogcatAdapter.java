@@ -12,6 +12,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
@@ -43,6 +44,9 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
 
     /** 报错代码行数正则表达式 */
     private static final Pattern CODE_REGEX = Pattern.compile("\\(\\w+\\.\\w+:\\d+\\)");
+
+    /** 链接正则表达式 */
+    private static final Pattern LINK_REGEX = Pattern.compile("https?://[^\\x{4e00}-\\x{9fa5}\\n\\r\\s]{3,}");
 
     private final SparseBooleanArray mExpandSet = new SparseBooleanArray();
     private final SparseIntArray mScrollXSet = new SparseIntArray();
@@ -236,7 +240,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
         public ViewHolder(View itemView) {
             super(itemView);
 
-            mHorizontalScrollView = (HorizontalScrollView) itemView.findViewById(R.id.hcv_log_content);
+            mHorizontalScrollView = itemView.findViewById(R.id.hcv_log_content);
             mContentView = itemView.findViewById(R.id.tv_log_content);
             mIndexView = itemView.findViewById(R.id.tv_log_index);
             mLineView = itemView.findViewById(R.id.v_log_line);
@@ -270,7 +274,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_MOVE:
-                    // 修改动作为ACTION_CANCEL
+                    // 修改动作为 ACTION_CANCEL
                     event.setAction(MotionEvent.ACTION_CANCEL);
                     // 将事件回传给父控件
                     itemView.onTouchEvent(event);
@@ -310,6 +314,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
                     }
                 }
             } else {
+                // 高亮代码行数
                 Matcher matcher = CODE_REGEX.matcher(content);
                 if (spannable.length() > 0) {
                     while (matcher.find()) {
@@ -324,6 +329,20 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
                     }
                 }
             }
+
+            // 高亮 H5 链接
+            Matcher matcher = LINK_REGEX.matcher(content);
+            while (matcher.find()) {
+                // 不包含左括号（
+                int start = matcher.start();
+                // 不包含右括号 ）
+                int end = matcher.end();
+                URLSpan urlSpan = new URLSpan(String.valueOf(spannable.subSequence(start, end)));
+                spannable.setSpan(urlSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                // 为什么不设置点击事件，因为这样会导致外层 ScrollView 触摸事件和 itemView 点击事件无效
+                //mContentView.setMovementMethod(LinkMovementMethod.getInstance());
+            }
+
             mContentView.setText(spannable);
 
             final int resourceId;

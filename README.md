@@ -4,7 +4,7 @@
 
 * 项目地址：[Github](https://github.com/getActivity/Logcat)、[码云](https://gitee.com/getActivity/Logcat)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/Logcat/releases/download/10.5/Logcat.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/Logcat/releases/download/10.6/Logcat.apk)
 
 ![](picture/demo_code.png)
 
@@ -51,7 +51,7 @@ dependencyResolutionManagement {
 ```groovy
 dependencies {
     // 日志调试框架：https://github.com/getActivity/Logcat
-    debugImplementation 'com.github.getActivity:Logcat:10.5'
+    debugImplementation 'com.github.getActivity:Logcat:10.6'
 }
 ```
 
