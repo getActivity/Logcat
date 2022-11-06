@@ -2,6 +2,7 @@ package com.hjq.logcat;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -54,7 +56,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
     private final List<LogcatInfo> mAllData = new ArrayList<>();
     private List<LogcatInfo> mShowData = mAllData;
 
-    private Context mContext;
+    private final Context mContext;
 
     private String mKeyword = "";
     private String mLogLevel = LogLevel.VERBOSE;
@@ -245,26 +247,39 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
             mIndexView = itemView.findViewById(R.id.tv_log_index);
             mLineView = itemView.findViewById(R.id.v_log_line);
 
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
+            mHorizontalScrollView.setOnClickListener(this);
+            mHorizontalScrollView.setOnLongClickListener(this);
 
             mHorizontalScrollView.setOnTouchListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            if (mItemClickListener != null) {
-                mItemClickListener.onItemClick(getItem(getLayoutPosition()), getLayoutPosition());
+            if (mItemClickListener == null) {
+                return;
             }
+            int layoutPosition = getLayoutPosition();
+            mItemClickListener.onItemClick(getItem(layoutPosition), layoutPosition);
         }
 
         @Override
         public boolean onLongClick(View v) {
-            if (mItemLongClickListener != null) {
-                mItemLongClickListener.onItemLongClick(getItem(getLayoutPosition()), getLayoutPosition());
+            if (mItemLongClickListener == null) {
+                return false;
             }
-            return false;
+            int layoutPosition = getLayoutPosition();
+            return mItemLongClickListener.onItemLongClick(getItem(layoutPosition), layoutPosition);
         }
+
+        /** 手指按下的坐标 */
+        private float mViewDownX;
+        private float mViewDownY;
+
+        /** 手指按下的时间 */
+        private long mDownTime;
+
+        /** 触摸移动标记 */
+        private boolean mMoveTouch;
 
         /**
          * View.OnTouchListener
@@ -273,30 +288,141 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    // 记录按下的位置（相对 View 的坐标）
+                    mViewDownX = event.getX();
+                    mViewDownY = event.getY();
+                    mDownTime = System.currentTimeMillis();
+                    mMoveTouch = false;
+                    break;
                 case MotionEvent.ACTION_MOVE:
-                    // 修改动作为 ACTION_CANCEL
-                    event.setAction(MotionEvent.ACTION_CANCEL);
-                    // 将事件回传给父控件
-                    itemView.onTouchEvent(event);
-                    // 父容器响应后恢复事件原动作
-                    event.setAction(MotionEvent.ACTION_MOVE);
+                    if (!mMoveTouch && isTouchMove(mViewDownX, event.getX(), mViewDownY, event.getY())) {
+                        // 如果用户移动了手指，那么就拦截本次触摸事件，从而不让点击事件生效
+                        mMoveTouch = true;
+                    }
                     break;
                 case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_CANCEL:
-                    LogcatInfo info = getItem(getLayoutPosition());
-                    int scrollX = mHorizontalScrollView.getScrollX();
-                    mScrollXSet.put(info.hashCode(), scrollX);
-                case MotionEvent.ACTION_DOWN:
+                    // java.lang.IndexOutOfBoundsException: Index: 813, Size: 801
+                    int layoutPosition = getLayoutPosition();
+                    if (layoutPosition <= getItemCount()) {
+                        LogcatInfo info = getItem(layoutPosition);
+                        int scrollX = mHorizontalScrollView.getScrollX();
+                        mScrollXSet.put(info.hashCode(), scrollX);
+                    }
+                    if (!mMoveTouch) {
+                        if (System.currentTimeMillis() - mDownTime > 200) {
+                            v.performLongClick();
+                        } else {
+                            v.performClick();
+                        }
+                    }
+                    break;
                 default:
-                    // 将事件回传给父控件
-                    itemView.onTouchEvent(event);
                     break;
             }
             return false;
         }
 
+        /**
+         * 判断用户是否移动了，判断标准以下：
+         * 根据手指按下和抬起时的坐标进行判断，不能根据有没有 move 事件来判断
+         * 因为在有些机型上面，就算用户没有手指没有移动也会产生 move 事件
+         *
+         * @param downX         手指按下时的 x 坐标
+         * @param upX           手指抬起时的 x 坐标
+         * @param downY         手指按下时的 y 坐标
+         * @param upY           手指抬起时的 y 坐标
+         */
+        protected boolean isTouchMove(float downX, float upX, float downY, float upY) {
+            float minTouchSlop = getScaledTouchSlop();
+            return Math.abs(downX - upX) >= minTouchSlop || Math.abs(downY - upY) >= minTouchSlop;
+        }
+
+        /**
+         * 获取最小触摸距离
+         */
+        protected float getScaledTouchSlop() {
+            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, Resources.getSystem().getDisplayMetrics());
+        }
+
         private void onBindView(LogcatInfo info, int position) {
             String content = info.toString(mContext);
+            // suspend all histogram:	Sum: 45.480ms 99% C.I. 0.342us-1624.319us Avg: 196.883us Max: 1880us
+            //DALVIK THREADS (32):
+            //"main" prio=5 tid=1 Runnable
+            //  | group="main" sCount=0 dsCount=0 flags=0 obj=0x73abd508 self=0x7bf15b0be0
+            //  | sysTid=5900 nice=0 cgrp=default sched=0/0 handle=0x7d790bf500
+            //  | state=R schedstat=( 38957797984 690538446 16911 ) utm=3558 stm=337 core=6 HZ=100
+            //  | stack=0x7fe263a000-0x7fe263c000 stackSize=8192KB
+            //  | held mutexes= "mutator lock"(shared held)
+            //  at android.text.SpannableStringInternal.getSpans(SpannableStringInternal.java:348)
+            //  at android.text.SpannedString.getSpans(SpannedString.java:25)
+            //  at android.text.SpanSet.init(SpanSet.java:50)
+            //  at android.text.TextLine.set(TextLine.java:192)
+            //  at android.text.Layout.getLineExtent(Layout.java:1448)
+            //  at android.text.Layout.getLineMax(Layout.java:1401)
+            //  at android.widget.TextView.desired(TextView.java:10320)
+            //  at android.widget.TextView.onMeasure(TextView.java:10392)
+            //  at android.view.View.measure(View.java:27131)
+            //  at android.widget.HorizontalScrollView.measureChildWithMargins(HorizontalScrollView.java:1841)
+            //  at android.widget.FrameLayout.onMeasure(FrameLayout.java:194)
+            //  at android.widget.HorizontalScrollView.onMeasure(HorizontalScrollView.java:586)
+            //  at android.view.View.measure(View.java:27131)
+            //  at android.widget.FrameLayout.onMeasure(FrameLayout.java:263)
+            //  at android.view.View.measure(View.java:27131)
+            //  at android.support.v7.widget.RecyclerView$LayoutManager.measureChildWithMargins(RecyclerView.java:8760)
+            //  at android.support.v7.widget.LinearLayoutManager.layoutChunk(LinearLayoutManager.java:1582)
+            //  at android.support.v7.widget.LinearLayoutManager.fill(LinearLayoutManager.java:1516)
+            //  at android.support.v7.widget.LinearLayoutManager.scrollBy(LinearLayoutManager.java:1330)
+            //  at android.support.v7.widget.LinearLayoutManager.scrollVerticallyBy(LinearLayoutManager.java:1074)
+            //  at android.support.v7.widget.RecyclerView.scrollByInternal(RecyclerView.java:1759)
+            //  at android.support.v7.widget.RecyclerView.onTouchEvent(RecyclerView.java:2971)
+            //  at android.view.View.dispatchTouchEvent(View.java:15199)
+            //  at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3914)
+            //  at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:3578)
+            //  at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3920)
+            //  at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:3594)
+            //  at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3920)
+            //  at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:3594)
+            //  at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3920)
+            //  at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:3594)
+            //  at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3920)
+            //  at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:3594)
+            //  at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3920)
+            //  at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:3594)
+            //  at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3920)
+            //  at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:3594)
+            //  at com.android.internal.policy.DecorView.superDispatchTouchEvent(DecorView.java:913)
+            //  at com.android.internal.policy.PhoneWindow.superDispatchTouchEvent(PhoneWindow.java:1957)
+            //  at android.app.Activity.dispatchTouchEvent(Activity.java:4182)
+            //  at android.support.v7.view.WindowCallbackWrapper.dispatchTouchEvent(WindowCallbackWrapper.java:68)
+            //  at com.android.internal.policy.DecorView.dispatchTouchEvent(DecorView.java:871)
+            //  at android.view.View.dispatchPointerEvent(View.java:15458)
+            //  at android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent(ViewRootImpl.java:7457)
+            //  at android.view.ViewRootImpl$ViewPostImeInputStage.onProcess(ViewRootImpl.java:7233)
+            //  at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:6595)
+            //  at android.view.ViewRootImpl$InputStage.onDeliverToNext(ViewRootImpl.java:6652)
+            //  at android.view.ViewRootImpl$InputStage.forward(ViewRootImpl.java:6618)
+            //  at android.view.ViewRootImpl$AsyncInputStage.forward(ViewRootImpl.java:6786)
+            //  at android.view.ViewRootImpl$InputStage.apply(ViewRootImpl.java:6626)
+            //  at android.view.ViewRootImpl$AsyncInputStage.apply(ViewRootImpl.java:6843)
+            //  at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:6599)
+            //  at android.view.ViewRootImpl$InputStage.onDeliverToNext(ViewRootImpl.java:6652)
+            //  at android.view.ViewRootImpl$InputStage.forward(ViewRootImpl.java:6618)
+            //  at android.view.ViewRootImpl$InputStage.apply(ViewRootImpl.java:6626)
+            //  at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:6599)
+            //  at android.view.ViewRootImpl.deliverInputEvent(ViewRootImpl.java:9880)
+            //  at android.view.ViewRootImpl.doProcessInputEvents(ViewRootImpl.java:9718)
+            //  at android.view.ViewRootImpl.enqueueInputEvent(ViewRootImpl.java:9671)
+            //  at android.view.ViewRootImpl$WindowInputEventReceiver.onInputEvent(ViewRootImpl.java:10014)
+            //  at android.view.InputEventReceiver.dispatchInputEvent(InputEventReceiver.java:220)
+            //  at android.os.MessageQueue.nativePollOnce(Native method)
+            //  at android.os.MessageQueue.next(MessageQueue.java:335)
+            //  at android.os.Looper.loop(Looper.java:206)
+            //  at android.app.ActivityThread.main(ActivityThread.java:8633)
+            //  at java.lang.reflect.Method.invoke(Native method)
+            //  at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:602)
+            //  at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1130)
             SpannableString spannable = new SpannableString(content);
             if (mKeyword != null && mKeyword.length() > 0) {
                 int index = content.indexOf(mKeyword);
@@ -463,6 +589,6 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
         /**
          * 当 RecyclerView 某个条目被长按时回调
          */
-        void onItemLongClick(LogcatInfo info, int position);
+        boolean onItemLongClick(LogcatInfo info, int position);
     }
 }

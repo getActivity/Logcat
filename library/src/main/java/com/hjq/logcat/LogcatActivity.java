@@ -91,10 +91,10 @@ public final class LogcatActivity extends AppCompatActivity
         mAdapter = new LogcatAdapter(this);
         mAdapter.setOnItemClickListener(this);
         mAdapter.setOnItemLongClickListener(this);
-        mRecyclerView.setAnimation(null);
-        mRecyclerView.setAdapter(mAdapter);
+
         mLinearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mRecyclerView.setAnimation(null);
         mCheckBox.setOnCheckedChangeListener(this);
         mInputView.addTextChangedListener(this);
 
@@ -117,12 +117,22 @@ public final class LogcatActivity extends AppCompatActivity
         // 开始捕获
         LogcatManager.start(this);
 
+        // mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // 延迟设置适配器，这样可以提升性能，因为进入这个界面的时候，会频繁添加日志，如果这个时候适配器已经绑定
+                // 那么就会引发 itemView 频繁测试和绘制，这样会很卡，并且还会出现 ANR 的情况
+                mRecyclerView.setAdapter(mAdapter);
+            }
+        }, 1000);
+
         mRecyclerView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mLinearLayoutManager.scrollToPosition(mAdapter.getItemCount() - 1);
             }
-        }, 500);
+        }, 1200);
 
         initFilter();
         refreshLayout();
@@ -246,7 +256,7 @@ public final class LogcatActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemLongClick(LogcatInfo info, final int position) {
+    public boolean onItemLongClick(LogcatInfo info, final int position) {
         new ChooseWindow(this)
                 .setList(R.string.logcat_options_copy, R.string.logcat_options_share, R.string.logcat_options_delete, R.string.logcat_options_shield)
                 .setListener(new ChooseWindow.OnListener() {
@@ -271,6 +281,7 @@ public final class LogcatActivity extends AppCompatActivity
                     }
                 })
                 .show();
+        return true;
     }
 
     private void copyLog(int position) {

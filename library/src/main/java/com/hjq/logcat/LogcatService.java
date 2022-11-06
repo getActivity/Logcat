@@ -21,6 +21,8 @@ import android.text.TextUtils;
  */
 public final class LogcatService extends Service {
 
+    private static final int BACKUP_SERVICE_NOTIFICATION_ID = Integer.MAX_VALUE >> 2;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -84,7 +86,7 @@ public final class LogcatService extends Service {
         }
 
         // 将服务和通知绑定在一起，成为前台服务
-        startForeground(Notification.FLAG_ONGOING_EVENT, builder.build());
+        startForeground(BACKUP_SERVICE_NOTIFICATION_ID, builder.build());
         return super.onStartCommand(intent, flags, startId);
     }
 

@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.app.NotificationManagerCompat;
@@ -39,7 +38,10 @@ public final class LogcatProvider extends ContentProvider {
 
             if (notifyEntrance != null && notifyEntrance) {
                 LogcatConfig.init(context.getApplicationContext());
-                context.startService(new Intent(context, LogcatService.class));
+
+                if (context instanceof Application) {
+                    ForegroundServiceStartTask.with((Application) context);
+                }
             }
 
             if (windowEntrance != null && windowEntrance) {

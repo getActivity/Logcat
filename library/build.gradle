@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         minSdkVersion 16
-        versionCode 1060
-        versionName "10.6"
+        versionCode 1080
+        versionName "10.8"
     }
 
     lintOptions {
@@ -37,7 +37,7 @@ dependencies {
     // noinspection GradleCompatible
     implementation 'com.android.support:design:26.0.0'
     // 悬浮窗框架：https://github.com/getActivity/XToast
-    implementation 'com.github.getActivity:XToast:8.5'
+    implementation 'com.github.getActivity:XToast:8.6'
 }
 
 tasks.withType(Javadoc) {
