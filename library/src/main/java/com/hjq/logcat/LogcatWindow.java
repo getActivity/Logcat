@@ -16,9 +16,9 @@ import com.hjq.xtoast.draggable.SpringDraggable;
  *    time   : 2020/01/24
  *    desc   : 悬浮窗口
  */
-final class FloatingWindow extends XToast<FloatingWindow> implements XToast.OnClickListener<View> {
+final class LogcatWindow extends XToast<LogcatWindow> implements XToast.OnClickListener<View> {
 
-    FloatingWindow(Activity activity) {
+    LogcatWindow(Activity activity) {
         super(activity);
 
         ImageView imageView = new ImageView(activity.getApplicationContext());

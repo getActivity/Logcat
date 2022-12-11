@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,8 +42,9 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
 
     /** 最大日志数量限制（避免日志过多导致出现 OOM） */
     private static final int LOG_MAX_COUNT = 1000;
+
     /** 达到阈值时删除的日志数量 */
-    private static final int LOG_REMOVE_COUNT = LOG_MAX_COUNT / 5;
+    private static final int LOG_REMOVE_COUNT = LOG_MAX_COUNT / 3;
 
     /** 报错代码行数正则表达式 */
     private static final Pattern CODE_REGEX = Pattern.compile("\\(\\w+\\.\\w+:\\d+\\)");
@@ -53,13 +55,15 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
     private final SparseBooleanArray mExpandSet = new SparseBooleanArray();
     private final SparseIntArray mScrollXSet = new SparseIntArray();
 
-    private final List<LogcatInfo> mAllData = new ArrayList<>();
+    private final List<LogcatInfo> mAllData = new CopyOnWriteArrayList<>();
     private List<LogcatInfo> mShowData = mAllData;
 
     private final Context mContext;
 
     private String mKeyword = "";
     private String mLogLevel = LogLevel.VERBOSE;
+
+    private RecyclerView mRecyclerView;
 
     /** 条目点击监听器 */
     @Nullable
@@ -123,6 +127,10 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
                 mShowData.removeAll(mShowData.subList(0, LOG_REMOVE_COUNT));
                 // 更新所有条目，这样日志的条目索引文案才能更新
                 notifyDataSetChanged();
+                if (mRecyclerView != null) {
+                    // 列表滚动到最后一条位置上面
+                    mRecyclerView.scrollToPosition(getItemCount() - 1);
+                }
             } else {
                 notifyItemInserted(mShowData.size() - 1);
             }
@@ -136,6 +144,18 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
                 mAllData.removeAll(mAllData.subList(0, LOG_REMOVE_COUNT));
             }
         }
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        mRecyclerView = recyclerView;
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        mRecyclerView = null;
     }
 
     /**

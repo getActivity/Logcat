@@ -11,14 +11,93 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:leftIcon="@null"
-        app:title="Logcat" />
+        app:title="https://github.com/getActivity/Logcat" />
 
-    <WebView
-        android:id="@+id/wv_main_web"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        tools:context=".MainActivity" />
+        android:fillViewport="true">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="日志 TAG：" />
+
+                    <EditText
+                        android:id="@+id/et_main_input_log_tag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="请输入日志的 TAG"
+                        android:text="MainActivity" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="日志内容：" />
+
+                    <EditText
+                        android:id="@+id/et_main_input_log_content"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="请输入日志的内容"
+                        android:text="我是日志的内容" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_main_print_log_debug"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="调用 Log.d 打印日志" />
+
+                <Button
+                    android:id="@+id/btn_main_print_log_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="调用 Log.i 打印日志" />
+
+                <Button
+                    android:id="@+id/btn_main_print_log_warn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="调用 Log.w 打印日志" />
+
+                <Button
+                    android:id="@+id/btn_main_print_log_error"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="调用 Log.e 打印日志" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

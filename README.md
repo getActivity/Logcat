@@ -4,23 +4,23 @@
 
 * 项目地址：[Github](https://github.com/getActivity/Logcat)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/Logcat/releases/download/10.8/Logcat.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/Logcat/releases/download/11.0/Logcat.apk)
 
 ![](picture/demo_code.png)
 
-![](picture/demo_1.jpg) ![](picture/demo_2.jpg) ![](picture/demo_3.jpg)
+![](picture/logcat_notify_entrance.jpg) ![](picture/logcat_window_entrance.jpg) ![](picture/logcat_activity_landscape.jpg)
 
-![](picture/demo_4.jpg)
+![](picture/logcat_activity_portrait.jpg)
 
-![](picture/demo_5.jpg)
+![](picture/logcat_level_select.jpg)
 
-![](picture/demo_6.jpg)
+![](picture/logcat_filter_level.jpg)
 
-![](picture/demo_7.jpg)
+![](picture/logcat_filter_content.jpg)
 
-![](picture/demo_8.jpg)
+![](picture/logcat_long_click_menu.jpg)
 
-![](picture/demo_9.jpg)
+![](picture/logcat_system_share.jpg)
 
 #### 集成步骤
 
@@ -51,7 +51,7 @@ dependencyResolutionManagement {
 ```groovy
 dependencies {
     // 日志调试框架：https://github.com/getActivity/Logcat
-    debugImplementation 'com.github.getActivity:Logcat:10.8'
+    debugImplementation 'com.github.getActivity:Logcat:11.0'
 }
 ```
 
@@ -72,152 +72,7 @@ android.enableJetifier = true
 
 * 在 debug 模式下运行即可，在 release 正式打包的时不会集成本库，尽管放心
 
-#### 入口配置
-
-* 框架默认提供了两种入口
-
-    * 通知栏入口
-
-    * 悬浮窗入口
-
-* 入口默认的规则：在有通知栏权限的情况下，会优先使用通知栏入口，否则则会显示悬浮窗入口
-
-* 如何修改默认的规则？可在清单文件中加入以下配置即可
-
-```xml
-<manifest>
-
-    <application>
-
-        <!-- 悬浮窗入口 -->
-        <meta-data
-            android:name="LogcatWindowEntrance"
-            android:value="false" />
-
-        <!-- 通知栏入口 -->
-        <meta-data
-            android:name="LogcatNotifyEntrance"
-            android:value="true" />
-
-    </application>
-
-</manifest>
-```
-
-#### 方向配置
-
-* `LogcatActivity` 默认是跟随手机屏幕方向的，如果你需要固定竖屏方向，那么需要在你的清单文件中加入此配置：
-
-```xml
-<activity
-    android:name="com.hjq.logcat.LogcatActivity"
-    android:configChanges="orientation|screenSize|keyboardHidden"
-    android:launchMode="singleInstance"
-    android:screenOrientation="portrait"
-    android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-    android:windowSoftInputMode="stateHidden"
-    tools:node="replace" />
-```
-
-#### 日志颜色个性化
-
-* 在项目的 `values/color.xml` 中加入你喜欢的配色，例如：
-
-```xml
-<color name="logcat_level_verbose_color">#FFBBBBBB</color>
-<color name="logcat_level_debug_color">#FF33B5E5</color>
-<color name="logcat_level_info_color">#FF99CC00</color>
-<color name="logcat_level_warn_color">#FFFFBB33</color>
-<color name="logcat_level_error_color">#FFFF4444</color>
-<color name="logcat_level_other_color">#FFFFFFFF</color>
-```
-
-#### 过滤日志
-
-* 在项目的 `values/string.xml` 中加入你要过滤的日志 TAG，例如：
-
-```xml
-<string-array name="logcat_filter_list" tools:ignore="ExtraTranslation">
-    <item>ActivityThread</item>
-    <item>InputMethodManager</item>
-    <item>OpenGLRenderer</item>
-    <item>VideoCapabilities</item>
-    <item>ViewRootImpl</item>
-    <item>Settings</item>
-    <item>Looper</item>
-    <item>TextView</item>
-    <item>TypefaceUtils</item>
-    <item>MultiDex</item>
-    <item>AudioManager</item>
-    <item>ConnectivityManager</item>
-    <item>NetworkSecurityConfig</item>
-    <item>HwPolicyFactory:</item>
-    <item>HwWidgetFactory:</item>
-    <item>HwApiCacheMangerEx</item>
-    <item>HwWechatOptimizeImpl</item>
-    <item>HwSplineOverScrollerExImpl</item>
-    <item>HwAppInnerBoostImpl</item>
-    <item>HwCustConnectivityManagerImpl</item>
-    <item>HwApsImpl</item>
-    <item>HwPhoneWindow</item>
-    <item>HwAutofillHelper</item>
-    <item>hwbr_engine_mainprocess</item>
-    <item>hwbr_engine_hwbr_event</item>
-    <item>hwbr_engine_PathUtils</item>
-    <item>hwbr_engine_AwContents</item>
-    <item>hwbr_engine_cr_IMM</item>
-    <item>hwbr_engine_LibraryLoader</item>
-    <item>hwbr_engine_BrowserStartup</item>
-    <item>hwbr_engine_cr_WebContentsImpl</item>
-    <item>CrashReport</item>
-    <item>CrashReportInfo</item>
-    <item>CrashReport-Native</item>
-    <item>LeakCanary</item>
-    <item>Timeline</item>
-    <item>AssistStructure</item>
-    <item>EgretLoader</item>
-    <item>OverScrollerOptimization</item>
-    <item>HiTouch_PressGestureDetector</item>
-    <item>HiTouch_HiTouchSensor</item>
-    <item>FLTAG_SFM</item>
-    <item>FLTAG_FM</item>
-    <item>libEGL</item>
-    <item>AwareLog</item>
-    <item>AwareBitmapCacher</item>
-    <item>AwareAppScheduleManager</item>
-    <item>FeatureFactory</item>
-    <item>WebViewFactory</item>
-    <item>ConfigStore</item>
-    <item>mali_winsys</item>
-    <item>ZrHung.AppEyeUiProbe</item>
-    <item>chatty</item>
-    <item>stylus</item>
-    <item>libc</item>
-    <item>chromium</item>
-    <item>Perf</item>
-    <item>FeatureParser</item>
-    <item>Binder:intercep</item>
-    <item>cr_LibraryLoader</item>
-    <item>cr_BrowserStartup</item>
-    <item>DecorView</item>
-    <item>DecorView[]</item>
-    <item>ForceDarkHelper</item>
-    <item>skia</item>
-    <item>AdrenoGLES-0</item>
-    <item>ViewContentFactory</item>
-    <item>MiuiFrameworkFactory</item>
-    <item>MIUIInput</item>
-    <item>cr_media</item>
-    <item>cr_CachingUmaRecorder</item>
-    <item>TetheringManager</item>
-    <item>MiuiFreeDragHelper</item>
-    <item>MiuiFreeDragImpl</item>
-    <item>ContentProviderMonitor</item>
-    <item>ContentCatcher</item>
-    <item>ApplicationLoaders</item>
-    <item>RenderInspector</item>
-</string-array>
-```
+## [框架的具体用法请点击这里查看](HelpDoc.md)
 
 #### 框架亮点
 

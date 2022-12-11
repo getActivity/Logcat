@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         minSdkVersion 16
-        versionCode 1080
-        versionName "10.8"
+        versionCode 1100
+        versionName "11.0"
     }
 
     lintOptions {
@@ -32,12 +32,14 @@ afterEvaluate {
 }
 
 dependencies {
+    // 依赖 libs 目录下所有的 jar 和 aar 包
+    // implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
     // noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:26.0.0'
     // noinspection GradleCompatible
     implementation 'com.android.support:design:26.0.0'
     // 悬浮窗框架：https://github.com/getActivity/XToast
-    implementation 'com.github.getActivity:XToast:8.6'
+    implementation 'com.github.getActivity:XToast:8.9'
 }
 
 tasks.withType(Javadoc) {

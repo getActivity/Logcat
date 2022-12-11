@@ -1,7 +1,10 @@
 package com.hjq.logcat;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import java.util.Locale;
 
 /**
  *    author : Android 轮子哥
@@ -11,48 +14,43 @@ import android.content.SharedPreferences;
  */
 final class LogcatConfig {
 
+    @SuppressLint("StaticFieldLeak")
+    private static Context sApplicationContext;
     private static SharedPreferences sConfig;
 
     /**
      * 初始化
      */
     static void init(Context context) {
-        sConfig = context.getSharedPreferences("logcat", Context.MODE_PRIVATE);
+        sApplicationContext = context.getApplicationContext();
+        sConfig = sApplicationContext.getSharedPreferences(
+                LogcatContract.SP_FILE_NAME, Context.MODE_PRIVATE);
     }
 
-    /**
-     * 日志过滤等级
-     */
-    private static final String LOGCAT_LEVEL = "logcat_level";
-
-    static String getLogcatLevel() {
-        if (sConfig != null) {
-            return sConfig.getString(LOGCAT_LEVEL, LogLevel.VERBOSE);
+    static String getLogLevelConfig() {
+        String defaultLogLevel = LogcatUtils.getMetaStringData(sApplicationContext,
+                LogcatContract.META_DATA_LOGCAT_DEFAULT_SEARCH_LEVEL);
+        if (defaultLogLevel != null && !"".equals(defaultLogLevel)) {
+            defaultLogLevel = defaultLogLevel.toUpperCase(Locale.ROOT);
         }
-        return LogLevel.VERBOSE;
+        String logLevel = sConfig.getString(LogcatContract.SP_KEY_LOGCAT_LOG_LEVEL, defaultLogLevel);
+        if (logLevel == null || "".equals(logLevel)) {
+            logLevel = LogLevel.VERBOSE;
+        }
+        return logLevel;
     }
 
-    static void setLogcatLevel(String level) {
-        if (sConfig != null) {
-            sConfig.edit().putString(LOGCAT_LEVEL, level).apply();
-        }
+    static void setLogLevelConfig(String logLevel) {
+        sConfig.edit().putString(LogcatContract.SP_KEY_LOGCAT_LOG_LEVEL, logLevel).apply();
     }
 
-    /**
-     * 搜索关键字
-     */
-    private static final String LOGCAT_TEXT = "logcat_text";
-
-    static String getLogcatText() {
-        if(sConfig != null) {
-            return sConfig.getString(LOGCAT_TEXT, "");
-        }
-        return "";
+    static String getSearchKeyConfig() {
+        String defaultSearchKey = LogcatUtils.getMetaStringData(sApplicationContext,
+                LogcatContract.META_DATA_LOGCAT_DEFAULT_SEARCH_KEY);
+        return sConfig.getString(LogcatContract.SP_KEY_LOGCAT_SEARCH_KEY, defaultSearchKey);
     }
 
-    static void setLogcatText(String keyword) {
-        if (sConfig != null) {
-            sConfig.edit().putString(LOGCAT_TEXT, keyword).apply();
-        }
+    static void setSearchKeyConfig(String searchKey) {
+        sConfig.edit().putString(LogcatContract.SP_KEY_LOGCAT_SEARCH_KEY, searchKey).apply();
     }
 }

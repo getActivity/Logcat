@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.hjq.logcat">
 
     <!-- 外部存储读写权限 -->
@@ -8,6 +9,9 @@
 
     <!-- 前台 Service 权限 -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- 读取其他应用日志权限 -->
+    <uses-permission android:name="android.permission.READ_LOGS" tools:ignore="ProtectedPermissions" />
 
     <application>
 

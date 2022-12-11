@@ -17,17 +17,14 @@ import android.widget.Toast;
  */
 public final class LogcatProvider extends ContentProvider {
 
-    /** 通知栏入口 */
-    private static final String META_DATA_LOGCAT_NOTIFY_ENTRANCE = "LogcatNotifyEntrance";
-    /** 悬浮窗入口 */
-    private static final String META_DATA_LOGCAT_WINDOW_ENTRANCE = "LogcatWindowEntrance";
-
     @Override
     public boolean onCreate() {
         Context context = getContext();
         if (context != null) {
-            Boolean notifyEntrance = LogcatUtils.getMetaBooleanData(context, META_DATA_LOGCAT_NOTIFY_ENTRANCE);
-            Boolean windowEntrance = LogcatUtils.getMetaBooleanData(context, META_DATA_LOGCAT_WINDOW_ENTRANCE);
+            Boolean notifyEntrance = LogcatUtils.getMetaBooleanData(
+                    context, LogcatContract.META_DATA_LOGCAT_NOTIFY_ENTRANCE);
+            Boolean windowEntrance = LogcatUtils.getMetaBooleanData(
+                    context, LogcatContract.META_DATA_LOGCAT_WINDOW_ENTRANCE);
             if (notifyEntrance == null && windowEntrance == null) {
                 if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
                     notifyEntrance = true;
@@ -46,7 +43,7 @@ public final class LogcatProvider extends ContentProvider {
 
             if (windowEntrance != null && windowEntrance) {
                 if (context instanceof Application) {
-                    FloatingLifecycle.with((Application) context);
+                    LogcatDispatcher.with((Application) context);
                 } else {
                     Toast.makeText(context, R.string.logcat_launch_error, Toast.LENGTH_LONG).show();
                 }

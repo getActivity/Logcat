@@ -1,9 +1,12 @@
 package com.hjq.logcat;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -49,7 +52,7 @@ public final class LogcatActivity extends AppCompatActivity
     private View mSaveView;
     private ViewGroup mLevelLayout;
     private TextView mLevelView;
-    private EditText mInputView;
+    private EditText mSearchView;
     private ImageView mIconView;
     private View mClearView;
     private View mHideView;
@@ -70,6 +73,9 @@ public final class LogcatActivity extends AppCompatActivity
     /** 搜索关键字 */
     private final List<String> mSearchKeyword = new ArrayList<>();
 
+    /** 当前是否授予了读取日志权限 */
+    private boolean mGrantedReadLogPermission;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +87,7 @@ public final class LogcatActivity extends AppCompatActivity
         mSaveView = findViewById(R.id.iv_log_save);
         mLevelLayout = findViewById(R.id.ll_log_level);
         mLevelView = findViewById(R.id.tv_log_level);
-        mInputView = findViewById(R.id.et_log_search_input);
+        mSearchView = findViewById(R.id.et_log_search_input);
         mIconView = findViewById(R.id.iv_log_search_icon);
         mClearView = findViewById(R.id.iv_log_logcat_clear);
         mHideView = findViewById(R.id.iv_log_logcat_hide);
@@ -96,10 +102,7 @@ public final class LogcatActivity extends AppCompatActivity
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mRecyclerView.setAnimation(null);
         mCheckBox.setOnCheckedChangeListener(this);
-        mInputView.addTextChangedListener(this);
-
-        mInputView.setText(LogcatConfig.getLogcatText());
-        setLogLevel(LogcatConfig.getLogcatLevel());
+        mSearchView.addTextChangedListener(this);
 
         mSaveView.setOnClickListener(this);
         mLevelLayout.setOnClickListener(this);
@@ -114,8 +117,23 @@ public final class LogcatActivity extends AppCompatActivity
         mClearView.setOnLongClickListener(this);
         mHideView.setOnLongClickListener(this);
 
+        mGrantedReadLogPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                checkSelfPermission(Manifest.permission.READ_LOGS) == PackageManager.PERMISSION_GRANTED;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            LogcatManager.setCanObtainUid(true);
+        } else if (mGrantedReadLogPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            LogcatManager.setCanObtainUid(true);
+        }
+
+        LogcatManager.setCallback(this);
+
         // 开始捕获
-        LogcatManager.start(this);
+        LogcatManager.start();
+
+        initLogFilter();
+        initSearchCondition();
+        refreshLayout();
 
         // mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.postDelayed(new Runnable() {
@@ -133,17 +151,38 @@ public final class LogcatActivity extends AppCompatActivity
                 mLinearLayoutManager.scrollToPosition(mAdapter.getItemCount() - 1);
             }
         }, 1200);
+    }
 
-        initFilter();
-        refreshLayout();
+    private void initSearchCondition() {
+        String searchKey = LogcatConfig.getSearchKeyConfig();
+        if (searchKey != null && !"".equals(searchKey)) {
+            mSearchView.setText(searchKey);
+        }
+
+        String logLevel = LogcatConfig.getLogLevelConfig();
+        setLogLevel(logLevel);
     }
 
     @Override
     public void onReceiveLog(LogcatInfo info) {
-        // 这个日志是当前进程打印的
-        // if (Integer.parseInt(info.getPid()) != android.os.Process.myPid()) {
-        //    return;
-        // }
+        // 如果当前没有授予读取日志权限，则只打印当前应用的日志，如果有权限，则显示所有日志
+        if (!mGrantedReadLogPermission) {
+            try {
+                String uidString = info.getUid();
+                if (uidString != null && !"".equals(uidString)) {
+                    int uid = Integer.parseInt(uidString);
+                    if (uid != android.os.Process.myUid()) {
+                        // 这个日志必须是当前应用打印的
+                        return;
+                    }
+                }
+            } catch (NumberFormatException ignore) {
+                // Android 10 及以下机型获取日志打印的 uid 会返回几个空格
+                // java.lang.NumberFormatException: For input string: "    "
+                // 切勿在此处打印任何异常或者日志，避免造成无限递归
+            }
+        }
+
         // 这个 Tag 必须不在过滤列表中
         if (mTagFilter.contains(info.getTag())) {
             return;
@@ -206,11 +245,11 @@ public final class LogcatActivity extends AppCompatActivity
                     })
                     .show();
         } else if (v == mIconView) {
-            String keyword = mInputView.getText().toString();
+            String keyword = mSearchView.getText().toString();
             if ("".equals(keyword)) {
                 showSearchKeyword();
             } else {
-                mInputView.setText("");
+                mSearchView.setText("");
             }
         } else if (v == mClearView) {
             LogcatManager.clear();
@@ -243,11 +282,11 @@ public final class LogcatActivity extends AppCompatActivity
 
     @Override
     public void afterTextChanged(Editable s) {
-        mInputView.removeCallbacks(mSearchRunnable);
-        mInputView.postDelayed(mSearchRunnable, 500);
+        mSearchView.removeCallbacks(mSearchRunnable);
+        mSearchView.postDelayed(mSearchRunnable, 500);
 
-        mInputView.removeCallbacks(mSearchKeywordRunnable);
-        mInputView.postDelayed(mSearchKeywordRunnable, 3000);
+        mSearchView.removeCallbacks(mSearchKeywordRunnable);
+        mSearchView.postDelayed(mSearchKeywordRunnable, 3000);
     }
 
     @Override
@@ -302,15 +341,15 @@ public final class LogcatActivity extends AppCompatActivity
     }
 
     private void setLogLevel(String level) {
-        if (level.equals(mLogLevel)) {
+        if (level.equalsIgnoreCase(mLogLevel)) {
             refreshLogLevelLayout();
             return;
         }
 
         mLogLevel = level;
         mAdapter.setLogLevel(level);
-        LogcatConfig.setLogcatLevel(level);
-        afterTextChanged(mInputView.getText());
+        LogcatConfig.setLogLevelConfig(level);
+        afterTextChanged(mSearchView.getText());
         refreshLogLevelLayout();
     }
 
@@ -359,7 +398,7 @@ public final class LogcatActivity extends AppCompatActivity
     /**
      * 初始化 Tag 过滤器
      */
-    private void initFilter() {
+    private void initLogFilter() {
         try {
             mTagFilter.addAll(LogcatUtils.readTagFilter(this));
         } catch (IOException e) {
@@ -416,7 +455,7 @@ public final class LogcatActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         // 清除输入焦点
-        mInputView.clearFocus();
+        mSearchView.clearFocus();
         // 移动到上一个任务栈
         moveTaskToBack(false);
     }
@@ -443,10 +482,11 @@ public final class LogcatActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         LogcatManager.destroy();
-        mInputView.removeCallbacks(mSearchRunnable);
-        mInputView.removeCallbacks(mSearchKeywordRunnable);
+        mSearchView.removeCallbacks(mSearchRunnable);
+        mSearchView.removeCallbacks(mSearchKeywordRunnable);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -466,8 +506,8 @@ public final class LogcatActivity extends AppCompatActivity
                 .setListener(new ChooseWindow.OnListener() {
                     @Override
                     public void onSelected(final int position) {
-                        mInputView.setText(mSearchKeyword.get(position));
-                        mInputView.setSelection(mInputView.getText().toString().length());
+                        mSearchView.setText(mSearchKeyword.get(position));
+                        mSearchView.setSelection(mSearchView.getText().toString().length());
                     }
                 })
                 .show();
@@ -539,8 +579,8 @@ public final class LogcatActivity extends AppCompatActivity
     private final Runnable mSearchRunnable = new Runnable() {
         @Override
         public void run() {
-            String keyword = mInputView.getText().toString();
-            LogcatConfig.setLogcatText(keyword);
+            String keyword = mSearchView.getText().toString();
+            LogcatConfig.setSearchKeyConfig(keyword);
             mAdapter.setKeyword(keyword);
             mLinearLayoutManager.scrollToPosition(mAdapter.getItemCount() - 1);
             if (!"".equals(keyword)) {
@@ -564,7 +604,7 @@ public final class LogcatActivity extends AppCompatActivity
 
         @Override
         public void run() {
-            String keyword = mInputView.getText().toString();
+            String keyword = mSearchView.getText().toString();
             if ("".equals(keyword)) {
                 return;
             }

@@ -5,20 +5,26 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 
 import com.hjq.bar.OnTitleBarListener;
 import com.hjq.bar.TitleBar;
 import com.hjq.toast.ToastUtils;
 
-public class MainActivity extends AppCompatActivity implements OnTitleBarListener {
+public final class MainActivity extends AppCompatActivity implements OnTitleBarListener, View.OnClickListener {
 
     private TitleBar mTitleBar;
-    private WebView mWebView;
+
+    private EditText mTagView;
+    private EditText mContentView;
+
+    private View mLogDebugView;
+    private View mLogInfoView;
+    private View mLogWarnView;
+    private View mLogErrorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,74 +32,59 @@ public class MainActivity extends AppCompatActivity implements OnTitleBarListene
         setContentView(R.layout.activity_main);
 
         mTitleBar = findViewById(R.id.tb_main_title);
+        mTagView = findViewById(R.id.et_main_input_log_tag);
+        mContentView = findViewById(R.id.et_main_input_log_content);
+
+        mLogDebugView = findViewById(R.id.btn_main_print_log_debug);
+        mLogInfoView = findViewById(R.id.btn_main_print_log_info);
+        mLogWarnView = findViewById(R.id.btn_main_print_log_warn);
+        mLogErrorView = findViewById(R.id.btn_main_print_log_error);
+
+        mLogDebugView.setOnClickListener(this);
+        mLogInfoView.setOnClickListener(this);
+        mLogWarnView.setOnClickListener(this);
+        mLogErrorView.setOnClickListener(this);
+
         mTitleBar.setOnTitleBarListener(this);
 
-        mWebView = findViewById(R.id.wv_main_web);
-        mWebView.setWebViewClient(new WebViewClient());
-        mWebView.setWebChromeClient(new MyWebChromeClient());
-
-        if (!String.valueOf(System.currentTimeMillis()).endsWith("1")) {
-            mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        }
-
-        mWebView.loadUrl("https://github.com/getActivity/Logcat");
-
         if (NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-            if (!ToastUtils.isInit()) {
-                ToastUtils.init(getApplication());
-            }
-
             ToastUtils.show("请点击通知栏入口进入日志查看页面");
         }
     }
 
-    private class MyWebChromeClient extends WebChromeClient {
-
-        @Override
-        public void onReceivedTitle(WebView view, String title) {
-            mTitleBar.setTitle(title);
+    @Override
+    public void onClick(View v) {
+        String logTag = mTagView.getText().toString();
+        String logContent = mContentView.getText().toString();
+        if (TextUtils.isEmpty(logTag)) {
+            ToastUtils.show("要打印的日志 TAG 不能为空");
+            return;
+        }
+        if (TextUtils.isEmpty(logContent)) {
+            ToastUtils.show("要打印的日志内容不能为空");
+            return;
+        }
+        String logSuccessHint = "打印成功，请点击右边的《机器人》查看日志";
+        if (v == mLogDebugView) {
+            Log.d(logTag, logContent);
+            ToastUtils.show(logSuccessHint);
+        } else if (v == mLogInfoView) {
+            Log.i(logTag, logContent);
+            ToastUtils.show(logSuccessHint);
+        } else if (v == mLogWarnView) {
+            Log.w(logTag, logContent);
+            ToastUtils.show(logSuccessHint);
+        } else if (v == mLogErrorView) {
+            Log.e(logTag, logContent);
+            ToastUtils.show(logSuccessHint);
         }
     }
 
     @Override
     public void onTitleClick(TitleBar titleBar) {
-        String url = mWebView.getUrl();
-        if (url != null && !"".equals(url)) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mWebView.onResume();
-        mWebView.resumeTimers();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mWebView.onPause();
-        mWebView.pauseTimers();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //清除历史记录
-        mWebView.clearHistory();
-        //停止加载
-        mWebView.stopLoading();
-        //加载一个空白页
-        mWebView.loadUrl("about:blank");
-        mWebView.setWebChromeClient(null);
-        mWebView.setWebViewClient(null);
-        //移除WebView所有的View对象
-        mWebView.removeAllViews();
-        //销毁此的WebView的内部状态
-        mWebView.destroy();
-        ((ViewGroup) mWebView.getParent()).removeView(mWebView);
+        Uri uri = Uri.parse(String.valueOf(mTitleBar.getTitle()));
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }
