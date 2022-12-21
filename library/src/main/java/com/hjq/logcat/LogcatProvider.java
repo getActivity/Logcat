@@ -21,6 +21,9 @@ public final class LogcatProvider extends ContentProvider {
     public boolean onCreate() {
         Context context = getContext();
         if (context != null) {
+            // 初始化 Logcat 配置项
+            LogcatConfig.init(context.getApplicationContext());
+
             Boolean notifyEntrance = LogcatUtils.getMetaBooleanData(
                     context, LogcatContract.META_DATA_LOGCAT_NOTIFY_ENTRANCE);
             Boolean windowEntrance = LogcatUtils.getMetaBooleanData(
@@ -34,8 +37,6 @@ public final class LogcatProvider extends ContentProvider {
             }
 
             if (notifyEntrance != null && notifyEntrance) {
-                LogcatConfig.init(context.getApplicationContext());
-
                 if (context instanceof Application) {
                     ForegroundServiceStartTask.with((Application) context);
                 }

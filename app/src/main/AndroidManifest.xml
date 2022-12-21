@@ -35,11 +35,6 @@
             android:name="LogcatNotifyEntrance"
             android:value="true" />
 
-        <!-- 通知栏入口 -->
-        <meta-data
-            android:name="LogcatNotifyEntrance"
-            android:value="true" />
-
 <!--        &lt;!&ndash; 默认搜索关键字 &ndash;&gt;-->
 <!--        <meta-data-->
 <!--            android:name="LogcatDefaultSearchKey"-->
