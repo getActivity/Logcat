@@ -128,6 +128,8 @@ android.enableJetifier = true
 
 * 省市区 Json 数据：[ProvinceJson](https://github.com/getActivity/ProvinceJson) ![](https://img.shields.io/github/stars/getActivity/ProvinceJson.svg) ![](https://img.shields.io/github/forks/getActivity/ProvinceJson.svg)
 
+* Markdown 语法文档：[MarkdownDoc](https://github.com/getActivity/MarkdownDoc) ![](https://img.shields.io/github/stars/getActivity/MarkdownDoc.svg) ![](https://img.shields.io/github/forks/getActivity/MarkdownDoc.svg)
+
 #### 微信公众号：Android轮子哥
 
 ![](https://raw.githubusercontent.com/getActivity/Donate/master/picture/official_ccount.png)

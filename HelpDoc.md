@@ -12,6 +12,8 @@
 
 * [设置显示所有应用打印的日志](#设置显示所有应用打印的日志)
 
+* [我如果要在线上使用这个库该怎么办](#我如果要在线上使用这个库该怎么办)
+
 #### Logcat 入口配置
 
 * 框架默认提供了两种入口
@@ -224,3 +226,54 @@ java.lang.SecurityException: grantRuntimePermission:
    * 换一台手机再试
 
 * 作者建议如果没有这个需求，则不需要开启此项功能，因为这样会导致 Logcat 显示的日志变多，会增加日志的复杂度和查找的难度
+
+#### 我如果要在线上使用这个库该怎么办
+
+* 首先我是十分不推荐在线上使用这个库，因为这个库的定位是为了方便调试使用，我也不敢保证这个库在线上使用会有什么问题，当然你如果要一定这样做，也不是没有办法，具体步骤如下：
+
+* 第一步：将依赖方式从 `debugImplementation` 修改成 `implementation`
+
+```groovy
+dependencies {
+    debugImplementation 'com.github.getActivity:Logcat:x.x'
+}
+```
+
+```groovy
+dependencies {
+    implementation 'com.github.getActivity:Logcat:x.x'
+}
+```
+
+* 第二步：隐藏 Logcat 入口展示
+
+```xml
+<manifest>
+
+    <application>
+
+        <!-- 悬浮窗入口 -->
+        <meta-data
+            android:name="LogcatWindowEntrance"
+            android:value="false" />
+
+        <!-- 通知栏入口 -->
+        <meta-data
+            android:name="LogcatNotifyEntrance"
+            android:value="false" />
+
+    </application>
+
+</manifest>
+```
+
+* 第三步：在合适的时机调起 Logcat
+
+```java
+try {
+    Class<?> clazz = Class.forName("com.hjq.logcat.LogcatActivity");
+    startActivity(new Intent(this, clazz));
+} catch (ClassNotFoundException e) {
+    e.printStackTrace();
+}
+```
