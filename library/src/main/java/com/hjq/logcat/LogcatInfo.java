@@ -2,7 +2,6 @@ package com.hjq.logcat;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -118,7 +117,6 @@ final class LogcatInfo {
             return null;
         }
 
-
         Matcher matcher;
         if (obtainUid) {
             matcher = LOG_PATTERN_ADD_UID.matcher(line);
@@ -199,6 +197,6 @@ final class LogcatInfo {
         String log = getContent();
         return String.format("%s" + LogcatInfo.SPACE + "%s" +
                 (log.startsWith("\n") ? LogcatInfo.SPACE : "\n")
-                + "%s", getTime(), getTag(), log);
+                + "%s", time, tag, log);
     }
 }

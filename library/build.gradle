@@ -5,12 +5,12 @@ android {
     // 资源前缀限制
     resourcePrefix "logcat_"
 
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 16
-        versionCode 1120
-        versionName "11.2"
+        versionCode 1130
+        versionName "11.3"
     }
 
     lintOptions {
@@ -38,8 +38,8 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.0.0'
     // noinspection GradleCompatible
     implementation 'com.android.support:design:26.0.0'
-    // 悬浮窗框架：https://github.com/getActivity/XToast
-    implementation 'com.github.getActivity:XToast:8.9'
+    // 悬浮窗框架：https://github.com/getActivity/EasyWindow
+    implementation 'com.github.getActivity:EasyWindow:10.3'
 }
 
 tasks.withType(Javadoc) {

@@ -9,10 +9,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.Adapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -25,7 +27,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -120,9 +121,8 @@ public final class LogcatActivity extends AppCompatActivity
         mGrantedReadLogPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 checkSelfPermission(Manifest.permission.READ_LOGS) == PackageManager.PERMISSION_GRANTED;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            LogcatManager.setCanObtainUid(true);
-        } else if (mGrantedReadLogPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ||
+                (mGrantedReadLogPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)) {
             LogcatManager.setCanObtainUid(true);
         }
 
@@ -136,6 +136,16 @@ public final class LogcatActivity extends AppCompatActivity
         refreshLayout();
 
         // mRecyclerView.setAdapter(mAdapter);
+        long delayMillis;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            delayMillis = 500;
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            delayMillis = 800;
+        } else if (Build.VERSION.SDK_INT >= VERSION_CODES.M) {
+            delayMillis = 1000;
+        } else {
+            delayMillis = 1200;
+        }
         mRecyclerView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -143,7 +153,7 @@ public final class LogcatActivity extends AppCompatActivity
                 // 那么就会引发 itemView 频繁测试和绘制，这样会很卡，并且还会出现 ANR 的情况
                 mRecyclerView.setAdapter(mAdapter);
             }
-        }, 1000);
+        }, delayMillis);
 
         mRecyclerView.postDelayed(new Runnable() {
             @Override
@@ -187,7 +197,14 @@ public final class LogcatActivity extends AppCompatActivity
         if (mTagFilter.contains(info.getTag())) {
             return;
         }
-        mRecyclerView.post(new LogRunnable(info));
+
+        Adapter<?> adapter = mRecyclerView.getAdapter();
+        if (adapter == null) {
+            // 避免频繁向主线程发送消息，如果日志过多会导致 ANR 出现
+            mAdapter.addItem(info);
+        } else {
+            mRecyclerView.post(new LogRunnable(info));
+        }
     }
 
     @Override
@@ -210,7 +227,7 @@ public final class LogcatActivity extends AppCompatActivity
     public void onClick(View v) {
         if (v == mSaveView) {
             try {
-                File file = LogcatUtils.saveLogToFile(this, mAdapter.getData());
+                File file = LogcatUtils.saveLogToFile(this, mAdapter.getShowData());
                 LogcatUtils.toast(this, getResources().getString(R.string.logcat_save_succeed) + file.getPath());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -438,7 +455,7 @@ public final class LogcatActivity extends AppCompatActivity
             LogcatUtils.toast(this, getResources().getString(R.string.logcat_shield_succeed) + file.getPath());
 
             // 从列表中删除关于这个 Tag 的日志
-            List<LogcatInfo> data = mAdapter.getData();
+            List<LogcatInfo> data = mAdapter.getShowData();
             for (int i = 0; i < data.size(); i++) {
                 LogcatInfo info = data.get(i);
                 if (info.getTag().equals(tag)) {

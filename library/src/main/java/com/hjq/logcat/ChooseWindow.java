@@ -7,9 +7,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
-import com.hjq.xtoast.XToast;
-
+import com.hjq.window.EasyWindow;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,8 +18,8 @@ import java.util.List;
  *    time   : 2020/01/24
  *    desc   : 列表选择类
  */
-final class ChooseWindow extends XToast<ChooseWindow> implements
-        AdapterView.OnItemClickListener, XToast.OnClickListener<View> {
+final class ChooseWindow extends EasyWindow<ChooseWindow> implements
+        AdapterView.OnItemClickListener, EasyWindow.OnClickListener<View> {
 
     private final ChooseAdapter mAdapter;
     private OnListener mListener;
@@ -34,7 +32,7 @@ final class ChooseWindow extends XToast<ChooseWindow> implements
             // 设置沉浸式状态栏
             addWindowFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
-        clearWindowFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        removeWindowFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
         ListView listView = findViewById(R.id.lv_choose_list);
         mAdapter = new ChooseAdapter();
@@ -45,7 +43,7 @@ final class ChooseWindow extends XToast<ChooseWindow> implements
     }
 
     @Override
-    public void onClick(XToast toast, View view) {
+    public void onClick(EasyWindow window, View view) {
         cancel();
     }
 

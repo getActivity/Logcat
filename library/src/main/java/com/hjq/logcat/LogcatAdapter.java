@@ -3,10 +3,11 @@ package com.hjq.logcat;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Build;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -24,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -47,7 +47,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
     private static final int LOG_REMOVE_COUNT = LOG_MAX_COUNT / 3;
 
     /** 报错代码行数正则表达式 */
-    private static final Pattern CODE_REGEX = Pattern.compile("\\(\\w+\\.\\w+:\\d+\\)");
+    private static final Pattern CODE_LINES_REGEX = Pattern.compile("\\(\\w+\\.\\w+:\\d+\\)");
 
     /** 链接正则表达式 */
     private static final Pattern LINK_REGEX = Pattern.compile("https?://[^\\x{4e00}-\\x{9fa5}\\n\\r\\s]{3,}");
@@ -100,12 +100,12 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
         return mShowData.get(position);
     }
 
-    List<LogcatInfo> getData() {
+    List<LogcatInfo> getShowData() {
         return mShowData;
     }
 
     /**
-     * 添加单条数据
+     * 添加单条数据（这个方法有可能会在子线程调用）
      */
     void addItem(LogcatInfo info) {
         if (!mShowData.isEmpty()) {
@@ -114,7 +114,9 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
                     info.getTag().equals(lastInfo.getTag())) {
                 // 追加日志
                 lastInfo.addLogContent(info.getContent());
-                notifyItemChanged(mShowData.size() - 1);
+                if (Looper.myLooper() == Looper.getMainLooper()) {
+                    notifyItemChanged(mShowData.size() - 1);
+                }
                 return;
             }
         }
@@ -126,13 +128,17 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
             if (mShowData.size() > LOG_MAX_COUNT) {
                 mShowData.removeAll(mShowData.subList(0, LOG_REMOVE_COUNT));
                 // 更新所有条目，这样日志的条目索引文案才能更新
-                notifyDataSetChanged();
+                if (Looper.myLooper() == Looper.getMainLooper()) {
+                    notifyDataSetChanged();
+                }
                 if (mRecyclerView != null) {
                     // 列表滚动到最后一条位置上面
                     mRecyclerView.scrollToPosition(getItemCount() - 1);
                 }
             } else {
-                notifyItemInserted(mShowData.size() - 1);
+                if (Looper.myLooper() == Looper.getMainLooper()) {
+                    notifyItemInserted(mShowData.size() - 1);
+                }
             }
         }
 
@@ -220,7 +226,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
     }
 
     private boolean isConform(LogcatInfo info) {
-        return (TextUtils.isEmpty(mKeyword) || info.toString(mContext).contains(mKeyword)) &&
+        return (TextUtils.isEmpty(mKeyword) || info.toString(mContext).toLowerCase().contains(mKeyword)) &&
                 (LogLevel.VERBOSE.equals(mLogLevel) || info.getLevel().equals(mLogLevel));
     }
 
@@ -452,8 +458,12 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
                 while (index > -1) {
                     int start = index;
                     int end = index + mKeyword.length();
-                    spannable.setSpan(new BackgroundColorSpan(Color.WHITE), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannable.setSpan(new ForegroundColorSpan(Color.BLACK), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannable.setSpan(new BackgroundColorSpan(
+                            ContextCompat.getColor(mContext, R.color.logcat_filter_background_color)),
+                            start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannable.setSpan(new ForegroundColorSpan(
+                            ContextCompat.getColor(mContext, R.color.logcat_filter_foreground_color)),
+                            start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     index = content.indexOf(mKeyword, end);
                     if (index == -1) {
                         index = content.toLowerCase().indexOf(mKeyword.toLowerCase(), end);
@@ -461,7 +471,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
                 }
             } else {
                 // 高亮代码行数
-                Matcher matcher = CODE_REGEX.matcher(content);
+                Matcher matcher = CODE_LINES_REGEX.matcher(content);
                 if (spannable.length() > 0) {
                     while (matcher.find()) {
                         // 不包含左括号（
@@ -469,7 +479,9 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
                         // 不包含右括号 ）
                         int end = matcher.end() - ")".length();
                         // 设置前景
-                        spannable.setSpan(new ForegroundColorSpan(0xFF999999), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        spannable.setSpan(new ForegroundColorSpan(
+                                ContextCompat.getColor(mContext, R.color.logcat_code_lines_highlight_color)),
+                                start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         // 设置下划线
                         spannable.setSpan(new UnderlineSpan(), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }

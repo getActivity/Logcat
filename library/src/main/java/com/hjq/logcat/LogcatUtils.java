@@ -9,9 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Surface;
-
-import com.hjq.xtoast.XToast;
-
+import com.hjq.window.EasyWindow;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -120,7 +118,7 @@ final class LogcatUtils {
     }
 
     static void toast(Activity activity, CharSequence text) {
-        new XToast<>(activity)
+        EasyWindow.with(activity)
                 .setContentView(R.layout.logcat_window_toast)
                 .setDuration(3000)
                 .setGravity(Gravity.CENTER)

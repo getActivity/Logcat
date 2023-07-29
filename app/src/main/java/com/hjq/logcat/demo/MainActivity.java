@@ -9,10 +9,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-
 import com.hjq.bar.OnTitleBarListener;
 import com.hjq.bar.TitleBar;
-import com.hjq.toast.ToastUtils;
+import com.hjq.toast.Toaster;
 
 public final class MainActivity extends AppCompatActivity implements OnTitleBarListener, View.OnClickListener {
 
@@ -48,7 +47,7 @@ public final class MainActivity extends AppCompatActivity implements OnTitleBarL
         mTitleBar.setOnTitleBarListener(this);
 
         if (NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-            ToastUtils.show("请点击通知栏入口进入日志查看页面");
+            Toaster.show("请点击通知栏入口进入日志查看页面");
         }
     }
 
@@ -57,26 +56,26 @@ public final class MainActivity extends AppCompatActivity implements OnTitleBarL
         String logTag = mTagView.getText().toString();
         String logContent = mContentView.getText().toString();
         if (TextUtils.isEmpty(logTag)) {
-            ToastUtils.show("要打印的日志 TAG 不能为空");
+            Toaster.show("要打印的日志 TAG 不能为空");
             return;
         }
         if (TextUtils.isEmpty(logContent)) {
-            ToastUtils.show("要打印的日志内容不能为空");
+            Toaster.show("要打印的日志内容不能为空");
             return;
         }
         String logSuccessHint = "打印成功，请点击右边的《机器人》查看日志";
         if (v == mLogDebugView) {
             Log.d(logTag, logContent);
-            ToastUtils.show(logSuccessHint);
+            Toaster.show(logSuccessHint);
         } else if (v == mLogInfoView) {
             Log.i(logTag, logContent);
-            ToastUtils.show(logSuccessHint);
+            Toaster.show(logSuccessHint);
         } else if (v == mLogWarnView) {
             Log.w(logTag, logContent);
-            ToastUtils.show(logSuccessHint);
+            Toaster.show(logSuccessHint);
         } else if (v == mLogErrorView) {
             Log.e(logTag, logContent);
-            ToastUtils.show(logSuccessHint);
+            Toaster.show(logSuccessHint);
         }
     }
 

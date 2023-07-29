@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "com.hjq.logcat.demo"
         minSdkVersion 16
-        targetSdkVersion 31
-        versionCode 1120
-        versionName "11.2"
+        targetSdkVersion 33
+        versionCode 1130
+        versionName "11.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -62,10 +62,10 @@ dependencies {
     implementation 'com.android.support:design:26.0.0'
 
     // 标题栏：https://github.com/getActivity/TitleBar
-    implementation 'com.github.getActivity:TitleBar:9.6'
+    implementation 'com.github.getActivity:TitleBar:10.3'
 
-    // 吐司框架：https://github.com/getActivity/ToastUtils
-    implementation 'com.github.getActivity:ToastUtils:11.2'
+    // 吐司框架：https://github.com/getActivity/Toaster
+    implementation 'com.github.getActivity:Toaster:12.2'
 
     // 内存泄漏捕捉：https://github.com/square/leakcanary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'

@@ -4,6 +4,9 @@
     <color name="logcat_window_background_color">#FF3C3F41</color>
     <color name="logcat_item_background_color">#FF2B2B2B</color>
     <color name="logcat_scrollbar_thumb_color">#FFFFFFFF</color>
+    <color name="logcat_filter_background_color">#FFFFFFFF</color>
+    <color name="logcat_filter_foreground_color">#FF000000</color>
+    <color name="logcat_code_lines_highlight_color">#FF999999</color>
 
     <color name="logcat_level_verbose_color">#FFBBBBBB</color>
     <color name="logcat_level_debug_color">#FF33B5E5</color>

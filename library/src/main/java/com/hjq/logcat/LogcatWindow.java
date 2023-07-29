@@ -6,9 +6,8 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
-
-import com.hjq.xtoast.XToast;
-import com.hjq.xtoast.draggable.SpringDraggable;
+import com.hjq.window.EasyWindow;
+import com.hjq.window.draggable.SpringDraggable;
 
 /**
  *    author : Android 轮子哥
@@ -16,7 +15,7 @@ import com.hjq.xtoast.draggable.SpringDraggable;
  *    time   : 2020/01/24
  *    desc   : 悬浮窗口
  */
-final class LogcatWindow extends XToast<LogcatWindow> implements XToast.OnClickListener<View> {
+final class LogcatWindow extends EasyWindow<LogcatWindow> implements EasyWindow.OnClickListener<View> {
 
     LogcatWindow(Activity activity) {
         super(activity);
@@ -37,7 +36,7 @@ final class LogcatWindow extends XToast<LogcatWindow> implements XToast.OnClickL
     }
 
     @Override
-    public void onClick(XToast toast, View view) {
+    public void onClick(EasyWindow window, View view) {
         startActivity(new Intent(getContext(), LogcatActivity.class));
     }
 }
