@@ -226,7 +226,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
     }
 
     private boolean isConform(LogcatInfo info) {
-        return (TextUtils.isEmpty(mKeyword) || info.toString(mContext).toLowerCase().contains(mKeyword)) &&
+        return (TextUtils.isEmpty(mKeyword) || info.toString(mContext).toLowerCase().contains(mKeyword.toLowerCase())) &&
                 (LogLevel.VERBOSE.equals(mLogLevel) || info.getLevel().equals(mLogLevel));
     }
 
