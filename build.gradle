@@ -1,36 +1,5 @@
-buildscript {
-    repositories {
-        // 阿里云云效仓库：https://maven.aliyun.com/mvn/guide
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        // 华为开源镜像：https://mirrors.huaweicloud.com/
-        maven { url 'https://repo.huaweicloud.com/repository/maven/' }
-        // JitPack 远程仓库：https://jitpack.io
-        maven { url 'https://jitpack.io' }
-        mavenCentral()
-        google()
-        // noinspection JcenterRepositoryObsolete
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.2'
-    }
-}
-
-allprojects {
-    repositories {
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://repo.huaweicloud.com/repository/maven/' }
-        maven { url 'https://jitpack.io' }
-        mavenCentral()
-        google()
-        // noinspection JcenterRepositoryObsolete
-        jcenter()
-    }
-
-    // 将构建文件统一输出到项目根目录下的 build 文件夹
-    setBuildDir(new File(rootDir, "build/${path.replaceAll(':', '/')}"))
+plugins {
+    id 'com.android.application' version '7.1.0' apply false
 }
 
 task clean(type: Delete) {

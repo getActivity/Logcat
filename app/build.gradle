@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.hjq.logcat.demo"
-        minSdkVersion 16
-        targetSdkVersion 33
-        versionCode 1150
-        versionName "11.5"
+        minSdk 16
+        targetSdk 34
+        versionCode 1160
+        versionName "11.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -42,12 +42,15 @@ android {
         }
     }
 
-    applicationVariants.all { variant ->
+    applicationVariants.configureEach { variant ->
         // apk 输出文件名配置
-        variant.outputs.all { output ->
+        variant.outputs.configureEach { output ->
             outputFileName = rootProject.getName() + '.apk'
         }
     }
+
+    // 将构建文件统一输出到项目根目录下的 build 文件夹
+    setBuildDir(new File(rootDir, "build/${path.replaceAll(':', '/')}"))
 }
 
 dependencies {
@@ -62,11 +65,11 @@ dependencies {
     implementation 'com.android.support:design:26.0.0'
 
     // 标题栏：https://github.com/getActivity/TitleBar
-    implementation 'com.github.getActivity:TitleBar:10.3'
+    implementation 'com.github.getActivity:TitleBar:10.5'
 
     // 吐司框架：https://github.com/getActivity/Toaster
-    implementation 'com.github.getActivity:Toaster:12.2'
+    implementation 'com.github.getActivity:Toaster:12.3'
 
     // 内存泄漏捕捉：https://github.com/square/leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
 }

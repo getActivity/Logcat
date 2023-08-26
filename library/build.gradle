@@ -5,24 +5,27 @@ android {
     // 资源前缀限制
     resourcePrefix "logcat_"
 
-    compileSdkVersion 33
+    compileSdk 34
 
     defaultConfig {
         minSdkVersion 16
-        versionCode 1150
-        versionName "11.5"
+        versionCode 1160
+        versionName "11.6"
     }
 
     lintOptions {
         abortOnError false
     }
 
-    android.libraryVariants.all { variant ->
+    android.libraryVariants.configureEach { variant ->
         // aar 输出文件名配置
-        variant.outputs.all { output ->
+        variant.outputs.configureEach { output ->
             outputFileName = "${rootProject.name}-${android.defaultConfig.versionName}.aar"
         }
     }
+
+    // 将构建文件统一输出到项目根目录下的 build 文件夹
+    setBuildDir(new File(rootDir, "build/${path.replaceAll(':', '/')}"))
 }
 
 afterEvaluate {

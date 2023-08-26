@@ -2,10 +2,8 @@ package com.hjq.logcat;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -18,12 +16,9 @@ import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
@@ -244,22 +239,9 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
         mItemLongClickListener = listener;
     }
 
-    @Override
-    public void onViewDetachedFromWindow(ViewHolder holder) {
-        super.onViewDetachedFromWindow(holder);
-        holder.onDetached();
-    }
-
-    @Override
-    public void onViewRecycled(@NonNull LogcatAdapter.ViewHolder holder) {
-        super.onViewRecycled(holder);
-        holder.onRecycled();
-    }
-
     public class ViewHolder extends RecyclerView.ViewHolder implements
-            View.OnTouchListener, View.OnClickListener, View.OnLongClickListener {
+            View.OnClickListener, View.OnLongClickListener {
 
-        private final HorizontalScrollView mHorizontalScrollView;
         private final TextView mContentView;
         private final TextView mIndexView;
         private final View mLineView;
@@ -268,15 +250,12 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
         public ViewHolder(View itemView) {
             super(itemView);
 
-            mHorizontalScrollView = itemView.findViewById(R.id.hcv_log_content);
             mContentView = itemView.findViewById(R.id.tv_log_content);
             mIndexView = itemView.findViewById(R.id.tv_log_index);
             mLineView = itemView.findViewById(R.id.v_log_line);
 
-            mHorizontalScrollView.setOnClickListener(this);
-            mHorizontalScrollView.setOnLongClickListener(this);
-
-            mHorizontalScrollView.setOnTouchListener(this);
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -295,80 +274,6 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
             }
             int layoutPosition = getLayoutPosition();
             return mItemLongClickListener.onItemLongClick(getItem(layoutPosition), layoutPosition);
-        }
-
-        /** 手指按下的坐标 */
-        private float mViewDownX;
-        private float mViewDownY;
-
-        /** 手指按下的时间 */
-        private long mDownTime;
-
-        /** 触摸移动标记 */
-        private boolean mMoveTouch;
-
-        /**
-         * View.OnTouchListener
-         */
-        @SuppressLint("ClickableViewAccessibility")
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    // 记录按下的位置（相对 View 的坐标）
-                    mViewDownX = event.getX();
-                    mViewDownY = event.getY();
-                    mDownTime = System.currentTimeMillis();
-                    mMoveTouch = false;
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    if (!mMoveTouch && isTouchMove(mViewDownX, event.getX(), mViewDownY, event.getY())) {
-                        // 如果用户移动了手指，那么就拦截本次触摸事件，从而不让点击事件生效
-                        mMoveTouch = true;
-                    }
-                    break;
-                case MotionEvent.ACTION_UP:
-                    // java.lang.IndexOutOfBoundsException: Index: 813, Size: 801
-                    int layoutPosition = getLayoutPosition();
-                    if (layoutPosition <= getItemCount()) {
-                        LogcatInfo info = getItem(layoutPosition);
-                        int scrollX = mHorizontalScrollView.getScrollX();
-                        mScrollXSet.put(info.hashCode(), scrollX);
-                    }
-                    if (!mMoveTouch) {
-                        if (System.currentTimeMillis() - mDownTime > 200) {
-                            v.performLongClick();
-                        } else {
-                            v.performClick();
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
-            return false;
-        }
-
-        /**
-         * 判断用户是否移动了，判断标准以下：
-         * 根据手指按下和抬起时的坐标进行判断，不能根据有没有 move 事件来判断
-         * 因为在有些机型上面，就算用户没有手指没有移动也会产生 move 事件
-         *
-         * @param downX         手指按下时的 x 坐标
-         * @param upX           手指抬起时的 x 坐标
-         * @param downY         手指按下时的 y 坐标
-         * @param upY           手指抬起时的 y 坐标
-         */
-        protected boolean isTouchMove(float downX, float upX, float downY, float upY) {
-            float minTouchSlop = getScaledTouchSlop();
-            return Math.abs(downX - upX) >= minTouchSlop || Math.abs(downY - upY) >= minTouchSlop;
-        }
-
-        /**
-         * 获取最小触摸距离
-         */
-        protected float getScaledTouchSlop() {
-            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, Resources.getSystem().getDisplayMetrics());
         }
 
         private void onBindView(LogcatInfo info, int position) {
@@ -557,49 +462,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
                 mContentView.setMaxLines(Integer.MAX_VALUE);
                 mIndexView.setText(String.valueOf(position + 1));
             }
-
-            mHorizontalScrollView.post(mScrollRunnable);
         }
-
-        /**
-         * ViewHolder 解绑时回调
-         */
-        public void onDetached() {
-            mHorizontalScrollView.removeCallbacks(mScrollRunnable);
-        }
-
-        /**
-         * ViewHolder 回收时回调
-         */
-        public void onRecycled() {
-            mHorizontalScrollView.removeCallbacks(mScrollRunnable);
-        }
-
-        /**
-         * 滚动任务
-         */
-        private final Runnable mScrollRunnable = new Runnable() {
-
-            @Override
-            public void run() {
-                int layoutPosition = getLayoutPosition();
-                if (layoutPosition < 0) {
-                    // 在进行屏幕旋转时，位置索引会为 -1
-                    // java.lang.ArrayIndexOutOfBoundsException: length=163; index=-1
-                    return;
-                }
-                if (layoutPosition >= getItemCount()) {
-                    // 避免数组出现越界
-                    return;
-                }
-                LogcatInfo info = getItem(layoutPosition);
-                int scrollX = mScrollXSet.get(info.hashCode());
-                if (mHorizontalScrollView.getScrollX() == scrollX) {
-                    return;
-                }
-                mHorizontalScrollView.scrollTo(scrollX, 0);
-            }
-        };
     }
 
     /**
