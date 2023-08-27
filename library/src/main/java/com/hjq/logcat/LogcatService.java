@@ -1,6 +1,6 @@
 package com.hjq.logcat;
 
-import android.app.Notification;
+import android.app.Notification.Builder;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,8 +8,11 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.IBinder;
 import android.text.TextUtils;
 
@@ -32,8 +35,8 @@ public final class LogcatService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Intent notificationIntent = new Intent(this, LogcatActivity.class);
         int pendingIntentFlag;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-            getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.S) {
+        if (VERSION.SDK_INT >= VERSION_CODES.S &&
+            getApplicationInfo().targetSdkVersion >= VERSION_CODES.S) {
             // Targeting S+ (version 31 and above) requires that one of FLAG_IMMUTABLE or FLAG_MUTABLE be specified when creating a PendingIntent.
             // Strongly consider using FLAG_IMMUTABLE, only use FLAG_MUTABLE if some functionality depends on the PendingIntent being mutable, e.g.
             // if it needs to be used with inline replies or bubbles.
@@ -48,7 +51,7 @@ public final class LogcatService extends Service {
             applicationName = getPackageName();
         }
 
-        Notification.Builder builder = new Notification.Builder(this)
+        Builder builder = new Builder(this)
                 // 设置大图标，不设置则默认为程序图标
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.logcat_floating_normal))
                 // 设置标题
@@ -60,7 +63,7 @@ public final class LogcatService extends Service {
                 .setContentIntent(pendingIntent);
 
         // 设置通知渠道
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (VERSION.SDK_INT >= VERSION_CODES.O) {
             // 通知渠道的id
             String notificationChannelId = "logcat";
             NotificationChannel channel = new NotificationChannel(notificationChannelId,
@@ -79,15 +82,20 @@ public final class LogcatService extends Service {
             builder.setChannelId(notificationChannelId);
         } else {
             // 关闭声音通知
-            builder.setSound(null);
-            // 关闭震动通知
-            builder.setVibrate(null);
-            // 关闭闪光灯通知
-            builder.setLights(0, 0, 0);
+            builder.setSound(null)
+                // 关闭震动通知
+                .setVibrate(null)
+                // 关闭闪光灯通知
+                .setLights(0, 0, 0);
         }
 
         // 将服务和通知绑定在一起，成为前台服务
-        startForeground(BACKUP_SERVICE_NOTIFICATION_ID, builder.build());
+        if (getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+            VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(BACKUP_SERVICE_NOTIFICATION_ID, builder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+        } else {
+            startForeground(BACKUP_SERVICE_NOTIFICATION_ID, builder.build());
+        }
         return super.onStartCommand(intent, flags, startId);
     }
 

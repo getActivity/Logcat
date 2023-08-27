@@ -10,12 +10,8 @@
     <!-- 前台 Service 权限 -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    <!-- 前台 Service 特殊用途权限 -->
-    <!-- java.lang.SecurityException:
-        Starting FGS with type specialUse callerApp=ProcessRecord
-        targetSDK=34 requires permissions: all of the permissions allOf=true
-        [android.permission.FOREGROUND_SERVICE_SPECIAL_USE] -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- 前台 Service 权限用途声明 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <!-- 读取其他应用日志权限 -->
     <uses-permission android:name="android.permission.READ_LOGS" tools:ignore="ProtectedPermissions" />
@@ -40,9 +36,8 @@
             Unable to start service com.hjq.logcat.LogcatService with Intent:
             android.app.MissingForegroundServiceTypeException:
             Starting FGS without a type  callerApp=ProcessRecord targetSDK=34 -->
-        <service android:name=".LogcatService" android:foregroundServiceType="specialUse">
-            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="foo"/>
-        </service>
+        <!-- 加上 foregroundServiceType 属性后，compileSdkVersion 需要 29 及以上的版本才能编译通过 -->
+        <service android:name=".LogcatService" android:foregroundServiceType="dataSync" />
 
     </application>
 

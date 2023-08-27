@@ -7,8 +7,8 @@ android {
         applicationId "com.hjq.logcat.demo"
         minSdk 16
         targetSdk 34
-        versionCode 1160
-        versionName "11.6"
+        versionCode 1180
+        versionName "11.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
