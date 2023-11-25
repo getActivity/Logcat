@@ -537,56 +537,53 @@ public final class LogcatActivity extends AppCompatActivity
         }
 
         Window window = getWindow();
-        if (window != null) {
-            // 沉浸式状态栏
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        if (window == null) {
+            return;
         }
+
+        // 沉浸式状态栏
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         mBarView.setPadding(0, 0, 0, 0);
         mRootView.setPadding(0, 0, 0, 0);
 
         if (LogcatUtils.isPortrait(this)) {
-            if (window != null) {
-                // 在竖屏的状态下显示状态栏和导航栏
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    // 实现状态栏图标和文字颜色为亮色
-                    window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-                }
+            // 在竖屏的状态下显示状态栏和导航栏
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // 实现状态栏图标和文字颜色为亮色
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
             }
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                if (window != null) {
-                    WindowManager.LayoutParams params = window.getAttributes();
-                    // 会让屏幕到延伸刘海区域中
-                    params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-                    window.setAttributes(params);
-                }
+                WindowManager.LayoutParams params = window.getAttributes();
+                // 会让屏幕到延伸刘海区域中
+                params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+                window.setAttributes(params);
             }
 
             mBarView.setPadding(0, LogcatUtils.getStatusBarHeight(this), 0, 0);
+            return;
+        }
+
+        // 在横屏的状态下隐藏状态栏和导航栏
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        mBarView.setPadding((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics()), 0,
+            (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics()), 0);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            WindowManager.LayoutParams params = window.getAttributes();
+            // 不让屏幕内容到延伸刘海区域中，会留出一片黑色区域
+            params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
+            window.setAttributes(params);
+            return;
+        }
+
+        if (LogcatUtils.isActivityReverse(this)) {
+            mRootView.setPadding(0, 0, LogcatUtils.getStatusBarHeight(this), 0);
         } else {
-            if (window != null) {
-                // 在横屏的状态下隐藏状态栏和导航栏
-                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            }
-
-            mBarView.setPadding((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics()), 0,
-                    (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics()), 0);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                if (window != null) {
-                    WindowManager.LayoutParams params = window.getAttributes();
-                    // 不会让屏幕到延伸刘海区域中，会留出一片黑色区域
-                    params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
-                    window.setAttributes(params);
-                }
-            } else {
-                if (LogcatUtils.isActivityReverse(this)) {
-                    mRootView.setPadding(0, 0, LogcatUtils.getStatusBarHeight(this), 0);
-                } else {
-                    mRootView.setPadding(LogcatUtils.getStatusBarHeight(this), 0, 0, 0);
-                }
-            }
+            mRootView.setPadding(LogcatUtils.getStatusBarHeight(this), 0, 0, 0);
         }
     }
 
@@ -600,16 +597,18 @@ public final class LogcatActivity extends AppCompatActivity
             LogcatConfig.setSearchKeyConfig(keyword);
             mAdapter.setKeyword(keyword);
             mLinearLayoutManager.scrollToPosition(mAdapter.getItemCount() - 1);
+
             if (!"".equals(keyword)) {
                 mIconView.setVisibility(View.VISIBLE);
                 mIconView.setImageResource(R.drawable.logcat_ic_empty);
+                return;
+            }
+
+            if (!mSearchKeyword.isEmpty()) {
+                mIconView.setVisibility(View.VISIBLE);
+                mIconView.setImageResource(R.drawable.logcat_ic_history);
             } else {
-                if (!mSearchKeyword.isEmpty()) {
-                    mIconView.setVisibility(View.VISIBLE);
-                    mIconView.setImageResource(R.drawable.logcat_ic_history);
-                } else {
-                    mIconView.setVisibility(View.GONE);
-                }
+                mIconView.setVisibility(View.GONE);
             }
         }
     };

@@ -7,7 +7,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import com.hjq.window.EasyWindow;
-import com.hjq.window.draggable.SpringDraggable;
+import com.hjq.window.draggable.SpringBackDraggable;
 
 /**
  *    author : Android 轮子哥
@@ -30,7 +30,7 @@ final class LogcatWindow extends EasyWindow<LogcatWindow> implements EasyWindow.
         setHeight(size);
 
         setAnimStyle(android.R.style.Animation_Toast);
-        setDraggable(new SpringDraggable());
+        setDraggable(new SpringBackDraggable());
         setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
         setOnClickListener(android.R.id.icon, this);
     }

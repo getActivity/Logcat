@@ -1,17 +1,10 @@
 apply plugin: 'com.android.library'
+apply from : '../common.gradle'
 
 android {
 
     // 资源前缀限制
     resourcePrefix "logcat_"
-
-    compileSdk 34
-
-    defaultConfig {
-        minSdkVersion 16
-        versionCode 1180
-        versionName "11.8"
-    }
 
     lintOptions {
         abortOnError false
@@ -23,9 +16,6 @@ android {
             outputFileName = "${rootProject.name}-${android.defaultConfig.versionName}.aar"
         }
     }
-
-    // 将构建文件统一输出到项目根目录下的 build 文件夹
-    setBuildDir(new File(rootDir, "build/${path.replaceAll(':', '/')}"))
 }
 
 afterEvaluate {
@@ -42,7 +32,7 @@ dependencies {
     // noinspection GradleCompatible
     implementation 'com.android.support:design:26.0.0'
     // 悬浮窗框架：https://github.com/getActivity/EasyWindow
-    implementation 'com.github.getActivity:EasyWindow:10.3'
+    implementation 'com.github.getActivity:EasyWindow:10.6'
 }
 
 tasks.withType(Javadoc).configureEach {
