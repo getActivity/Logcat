@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="logcat_launch_error">參數錯誤，無法啓動 Logcat</string>

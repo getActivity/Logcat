@@ -44,8 +44,8 @@ public final class LogcatActivity extends AppCompatActivity
         CompoundButton.OnCheckedChangeListener, LogcatManager.Callback,
         LogcatAdapter.OnItemLongClickListener, LogcatAdapter.OnItemClickListener {
 
-    private final static String[] ARRAY_LOG_LEVEL = {"Verbose", "Debug", "Info", "Warn", "Error"};
-    private final static String[] ARRAY_LOG_LEVEL_PORTRAIT = {"V", "D", "I", "W", "E"};
+    private static final String[] ARRAY_LOG_LEVEL = {"Verbose", "Debug", "Info", "Warn", "Error"};
+    private static final String[] ARRAY_LOG_LEVEL_PORTRAIT = {"V", "D", "I", "W", "E"};
 
     private View mRootView;
     private View mBarView;

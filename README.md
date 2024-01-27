@@ -4,7 +4,7 @@
 
 * 项目地址：[Github](https://github.com/getActivity/Logcat)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/Logcat/releases/download/11.82/Logcat.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/Logcat/releases/download/11.85/Logcat.apk)
 
 ![](picture/demo_code.png)
 
@@ -51,7 +51,7 @@ dependencyResolutionManagement {
 ```groovy
 dependencies {
     // 日志调试框架：https://github.com/getActivity/Logcat
-    debugImplementation 'com.github.getActivity:Logcat:11.82'
+    debugImplementation 'com.github.getActivity:Logcat:11.85'
 }
 ```
 
@@ -65,18 +65,6 @@ android.enableJetifier = true
 ```
 
 * 如果项目是基于 **Support** 包则不需要加入此配置
-
-#### compileSdk 版本要求
-
-* 如果项目的 `compileSdkVersion` 小于 29，则需要先升级成 29
-
-```groovy
-android {
-    compileSdkVersion 29
-}
-```
-
-* 如果项目的 `compileSdkVersion` 大于等于 29，则不需要修改此配置
 
 #### 使用方式
 
@@ -157,18 +145,6 @@ android {
 #### 如果您觉得我的开源库帮你节省了大量的开发时间，请扫描下方的二维码随意打赏，要是能打赏个 10.24 :monkey_face:就太:thumbsup:了。您的支持将鼓励我继续创作:octocat:（[点击查看捐赠列表](https://github.com/getActivity/Donate)）
 
 ![](https://raw.githubusercontent.com/getActivity/Donate/master/picture/pay_ali.png) ![](https://raw.githubusercontent.com/getActivity/Donate/master/picture/pay_wechat.png)
-
-#### 广告区
-
-* 我现在任腾讯云服务器推广大使，大家如果有购买服务器的需求，可以通过下面的链接购买
-
-[![](https://upload-dianshi-1255598498.file.myqcloud.com/upload/nodir/345X200-9ae456f58874df499adf7c331c02cb0fed12b81d.jpg)](https://curl.qcloud.com/A6cYskvv)
-
-[【腾讯云】云服务器、云数据库、COS、CDN、短信等云产品特惠热卖中](https://curl.qcloud.com/A6cYskvv)
-
-[![](https://upload-dianshi-1255598498.file.myqcloud.com/345-200-b28f7dee9552f4241ea6a543f15a9798049701d4.jpg)](https://curl.qcloud.com/up4fQsdn)
-
-[【腾讯云】中小企业福利专场，多款刚需产品，满足企业通用场景需求](https://curl.qcloud.com/up4fQsdn)
 
 ## License
 

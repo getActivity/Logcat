@@ -24,6 +24,8 @@ import android.text.TextUtils;
  */
 public final class LogcatService extends Service {
 
+    public static final String NOTIFICATION_CHANNEL_ID = "logcat";
+
     private static final int BACKUP_SERVICE_NOTIFICATION_ID = Integer.MAX_VALUE >> 2;
 
     @Override
@@ -65,7 +67,7 @@ public final class LogcatService extends Service {
         // 设置通知渠道
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
             // 通知渠道的id
-            String notificationChannelId = "logcat";
+            String notificationChannelId = NOTIFICATION_CHANNEL_ID;
             NotificationChannel channel = new NotificationChannel(notificationChannelId,
                     getString(R.string.logcat_notify_channel_name), NotificationManager.IMPORTANCE_MIN);
             // 配置通知渠道的属性

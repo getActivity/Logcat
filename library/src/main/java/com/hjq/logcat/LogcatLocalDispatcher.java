@@ -9,12 +9,12 @@ import android.util.TypedValue;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/Logcat
  *    time   : 2020/01/24
- *    desc   : Logcat 悬浮窗显示派发
+ *    desc   : Logcat 悬浮窗局部显示派发
  */
-final class LogcatDispatcher implements Application.ActivityLifecycleCallbacks {
+final class LogcatLocalDispatcher implements Application.ActivityLifecycleCallbacks {
 
-    static void with(Application application) {
-        application.registerActivityLifecycleCallbacks(new LogcatDispatcher());
+    static void launch(Application application) {
+        application.registerActivityLifecycleCallbacks(new LogcatLocalDispatcher());
     }
 
     @Override

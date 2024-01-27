@@ -14,6 +14,8 @@
 
 * [我如果要在线上使用这个库该怎么办](#我如果要在线上使用这个库该怎么办)
 
+* [在多进程情况下无法展示入口怎么办](#在多进程情况下无法展示入口怎么办)
+
 #### Logcat 入口配置
 
 * 框架默认提供了两种入口
@@ -275,5 +277,52 @@ try {
     startActivity(new Intent(this, clazz));
 } catch (ClassNotFoundException e) {
     e.printStackTrace();
+}
+```
+
+#### 在多进程情况下无法展示入口怎么办
+
+* 这个问题其实之前就有人提出过 [Logcat/issues/35](https://github.com/getActivity/Logcat/issues/35)，但是经过核实是无法修复的，这是因为在开启子进程的情况下，会二次创建 Application 对象，然后重新走一遍 onCreate 方法，但是 ContentProvider 组件就不一样了，并不会重复创建，这就导致一个问题，Logcat 这个框架本身就依赖 ContentProvider 作为框架的初始化入口，但是它在子进程并不会被系统二次创建，更别说调用了，这个属于硬伤。
+
+* 当然不代表这就没有解决手段，你可以手动初始化 Logcat 框架来解决这一问题，具体方式如下：
+
+* 第一步：先在清单文件中去除 Logcat 框架初始化入口
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.xxx.xxx">
+
+    <application>
+
+        <provider
+            android:name="com.hjq.logcat.LogcatProvider"
+            tools:node="remove" />
+
+    </application>
+
+</manifest>
+```
+
+* 第二步：在 Application.onCreate 方法中手动初始化 Logcat 框架
+
+```java
+public final class XxxApplication extends Application {
+
+   @Override
+   public void onCreate() {
+      super.onCreate();
+
+       try {
+           Class<?> logcatProviderClass = Class.forName("com.hjq.logcat.LogcatProvider");
+           Object logcatProvider = logcatProviderClass.newInstance();
+           Method attachInfoMethod = logcatProviderClass.getMethod("attachInfo", Context.class, ProviderInfo.class);
+           attachInfoMethod.setAccessible(true);
+           attachInfoMethod.invoke(logcatProvider, this, null);
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+   }
 }
 ```
