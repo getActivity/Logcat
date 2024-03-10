@@ -8,9 +8,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ServiceInfo;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.IBinder;
@@ -92,12 +90,7 @@ public final class LogcatService extends Service {
         }
 
         // 将服务和通知绑定在一起，成为前台服务
-        if (getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
-            VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(BACKUP_SERVICE_NOTIFICATION_ID, builder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
-        } else {
-            startForeground(BACKUP_SERVICE_NOTIFICATION_ID, builder.build());
-        }
+        startForeground(BACKUP_SERVICE_NOTIFICATION_ID, builder.build());
         return super.onStartCommand(intent, flags, startId);
     }
 
