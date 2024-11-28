@@ -72,11 +72,11 @@ android.enableJetifier = true
 
 ```groovy
 android {
-    compileSdkVersion 29
+    compileSdkVersion 34
 }
 ```
 
-* 如果项目的 `compileSdkVersion` 大于等于 29，则不需要修改此配置
+* 如果项目的 `compileSdkVersion` 大于等于 34，则不需要修改此配置
 
 #### 使用方式
 
