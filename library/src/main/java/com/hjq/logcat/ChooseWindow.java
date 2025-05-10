@@ -2,12 +2,14 @@ package com.hjq.logcat;
 
 import android.app.Activity;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import com.hjq.window.EasyWindow;
+import com.hjq.window.OnWindowViewClickListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +21,7 @@ import java.util.List;
  *    desc   : 列表选择类
  */
 final class ChooseWindow extends EasyWindow<ChooseWindow> implements
-        AdapterView.OnItemClickListener, EasyWindow.OnClickListener<View> {
+        AdapterView.OnItemClickListener, OnWindowViewClickListener<View> {
 
     private final ChooseAdapter mAdapter;
     private OnListener mListener;
@@ -39,11 +41,11 @@ final class ChooseWindow extends EasyWindow<ChooseWindow> implements
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(this);
 
-        setOnClickListener(R.id.fl_choose_root, this);
+        setOnClickListenerByView(R.id.fl_choose_root, this);
     }
 
     @Override
-    public void onClick(EasyWindow window, View view) {
+    public void onClick(@NonNull EasyWindow<?> easyWindow, @NonNull View view) {
         cancel();
     }
 

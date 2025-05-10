@@ -32,7 +32,7 @@ dependencies {
     // noinspection GradleCompatible
     implementation 'com.android.support:design:26.0.0'
     // 悬浮窗框架：https://github.com/getActivity/EasyWindow
-    implementation 'com.github.getActivity:EasyWindow:10.6'
+    implementation 'com.github.getActivity:EasyWindow:12.0'
 }
 
 tasks.withType(Javadoc).configureEach {

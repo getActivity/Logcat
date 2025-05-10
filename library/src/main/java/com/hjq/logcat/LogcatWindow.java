@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import com.hjq.window.EasyWindow;
-import com.hjq.window.draggable.SpringBackDraggable;
+import com.hjq.window.OnWindowViewClickListener;
+import com.hjq.window.draggable.SpringBackWindowDraggableRule;
 
 /**
  *    author : Android 轮子哥
@@ -17,7 +19,7 @@ import com.hjq.window.draggable.SpringBackDraggable;
  *    time   : 2020/01/24
  *    desc   : 悬浮窗口
  */
-final class LogcatWindow extends EasyWindow<LogcatWindow> implements EasyWindow.OnClickListener<View> {
+final class LogcatWindow extends EasyWindow<LogcatWindow> implements OnWindowViewClickListener<View> {
 
     public LogcatWindow(Application application) {
         super(application);
@@ -40,13 +42,13 @@ final class LogcatWindow extends EasyWindow<LogcatWindow> implements EasyWindow.
         setHeight(size);
 
         setAnimStyle(android.R.style.Animation_Toast);
-        setDraggable(new SpringBackDraggable());
+        setWindowDraggableRule(new SpringBackWindowDraggableRule());
         setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
-        setOnClickListener(android.R.id.icon, this);
+        setOnClickListenerByView(android.R.id.icon, this);
     }
 
     @Override
-    public void onClick(EasyWindow window, View view) {
+    public void onClick(@NonNull EasyWindow<?> easyWindow, @NonNull View view) {
         Context context = getContext();
         Intent intent = new Intent(context, LogcatActivity.class);
         if (!(context instanceof Activity)) {

@@ -120,10 +120,10 @@ final class LogcatUtils {
     static void toast(Activity activity, CharSequence text) {
         EasyWindow.with(activity)
                 .setContentView(R.layout.logcat_window_toast)
-                .setDuration(3000)
+                .setWindowDuration(3000)
                 .setGravity(Gravity.CENTER)
                 .setAnimStyle(android.R.style.Animation_Toast)
-                .setText(android.R.id.message, text)
+                .setTextByTextView(android.R.id.message, text)
                 .show();
     }
 
