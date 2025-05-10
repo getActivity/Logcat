@@ -9,7 +9,7 @@ android {
         // Android 版本适配指南：https://github.com/getActivity/AndroidVersionAdapter
         targetSdk 34
         versionCode 1200
-        versionName "12.00"
+        versionName "12.0"
     }
 
     // 支持 Java JDK 8
