@@ -57,6 +57,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
 
     private String mKeyword = "";
     private String mLogLevel = LogLevel.VERBOSE;
+    private boolean mLogAutoMergePrint = true;
 
     private RecyclerView mRecyclerView;
 
@@ -69,6 +70,11 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
 
     public LogcatAdapter(Context context) {
         mContext = context;
+        Boolean metaBooleanData = LogcatUtils.getMetaBooleanData(
+            context, LogcatContract.META_DATA_LOGCAT_AUTO_MERGE_PRINT);
+        if (metaBooleanData != null) {
+            mLogAutoMergePrint = metaBooleanData;
+        }
     }
 
     @Override
@@ -103,7 +109,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
      * 添加单条数据（这个方法有可能会在子线程调用）
      */
     void addItem(LogcatInfo info) {
-        if (!mShowData.isEmpty()) {
+        if (mLogAutoMergePrint && !mShowData.isEmpty()) {
             LogcatInfo lastInfo = getItem(mShowData.size() - 1);
             if (info.getLevel().equals(lastInfo.getLevel()) &&
                     info.getTag().equals(lastInfo.getTag())) {

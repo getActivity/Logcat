@@ -16,6 +16,8 @@
 
 * [在多进程情况下无法展示入口怎么办](#在多进程情况下无法展示入口怎么办)
 
+* [相同的 TAG 日志会自动合并打印怎么关闭](#相同的-tag-日志会自动合并打印怎么关闭)
+
 #### Logcat 入口配置
 
 * 框架默认提供了两种入口
@@ -325,4 +327,23 @@ public final class XxxApplication extends Application {
        }
    }
 }
+```
+
+#### 相同的 TAG 日志会自动合并打印怎么关闭
+
+* 当发现有两个及以上相同的 TAG 的日志，且过程中没有插入新 TAG 的日志，为了日志显示的美观，框架会自动进行合并打印，你如果不需要该功能，在清单文件中加入以下配置即可：
+
+```xml
+<manifest>
+
+    <application>
+
+        <!-- 日志合并打印（默认开启） -->
+        <meta-data
+            android:name="LogcatAutoMergePrint"
+            android:value="false" />
+
+    </application>
+
+</manifest>
 ```

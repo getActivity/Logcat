@@ -36,6 +36,11 @@
             android:name="LogcatNotifyEntrance"
             android:value="true" />
 
+<!--        &lt;!&ndash; 日志合并打印（默认开启） &ndash;&gt;-->
+<!--        <meta-data-->
+<!--            android:name="LogcatAutoMergePrint"-->
+<!--            android:value="false" />-->
+
 <!--        &lt;!&ndash; 默认搜索关键字 &ndash;&gt;-->
 <!--        <meta-data-->
 <!--            android:name="LogcatDefaultSearchKey"-->

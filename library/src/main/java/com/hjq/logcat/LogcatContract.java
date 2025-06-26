@@ -14,6 +14,9 @@ final class LogcatContract {
    /** 悬浮窗入口 */
    static final String META_DATA_LOGCAT_WINDOW_ENTRANCE = "LogcatWindowEntrance";
 
+    /** 自动合并打印日志（默认开启） */
+    static final String META_DATA_LOGCAT_AUTO_MERGE_PRINT = "LogcatAutoMergePrint";
+
    /** 默认搜索关键字 */
    static final String META_DATA_LOGCAT_DEFAULT_SEARCH_KEY = "LogcatDefaultSearchKey";
 
