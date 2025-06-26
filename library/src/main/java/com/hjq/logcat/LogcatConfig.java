@@ -3,7 +3,6 @@ package com.hjq.logcat;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import java.util.Locale;
 
 /**
@@ -30,11 +29,11 @@ final class LogcatConfig {
     static String getLogLevelConfig() {
         String defaultLogLevel = LogcatUtils.getMetaStringData(sApplicationContext,
                 LogcatContract.META_DATA_LOGCAT_DEFAULT_SEARCH_LEVEL);
-        if (defaultLogLevel != null && !"".equals(defaultLogLevel)) {
+        if (defaultLogLevel != null && !defaultLogLevel.isEmpty()) {
             defaultLogLevel = defaultLogLevel.toUpperCase(Locale.ROOT);
         }
         String logLevel = sConfig.getString(LogcatContract.SP_KEY_LOGCAT_LOG_LEVEL, defaultLogLevel);
-        if (logLevel == null || "".equals(logLevel)) {
+        if (logLevel == null || logLevel.isEmpty()) {
             logLevel = LogLevel.VERBOSE;
         }
         return logLevel;

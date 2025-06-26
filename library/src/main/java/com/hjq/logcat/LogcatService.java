@@ -1,5 +1,6 @@
 package com.hjq.logcat;
 
+import android.app.Notification;
 import android.app.Notification.Builder;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -31,6 +32,7 @@ public final class LogcatService extends Service {
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Intent notificationIntent = new Intent(this, LogcatActivity.class);
@@ -51,7 +53,7 @@ public final class LogcatService extends Service {
             applicationName = getPackageName();
         }
 
-        Builder builder = new Builder(this)
+        Builder builder = new Notification.Builder(this)
                 // 设置大图标，不设置则默认为程序图标
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.logcat_floating_normal))
                 // 设置标题

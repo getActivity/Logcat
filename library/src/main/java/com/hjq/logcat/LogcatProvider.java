@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 import android.widget.Toast;
 
@@ -42,49 +43,47 @@ public final class LogcatProvider extends ContentProvider {
                 }
             }
 
-            if (notifyEntrance != null && notifyEntrance) {
-                if (context instanceof Application) {
+            if (context instanceof Application) {
+                if (notifyEntrance != null && notifyEntrance) {
                     ForegroundServiceStartTask.with((Application) context);
                 }
-            }
 
-            if (windowEntrance != null && windowEntrance) {
-                if (context instanceof Application) {
+                if (windowEntrance != null && windowEntrance) {
                     if (VERSION.SDK_INT >= VERSION_CODES.M && Settings.canDrawOverlays(context)) {
                         LogcatGlobalDispatcher.launch((Application) context);
                     } else {
                         LogcatLocalDispatcher.launch((Application) context);
                     }
-                } else {
-                    Toast.makeText(context, R.string.logcat_launch_error, Toast.LENGTH_LONG).show();
                 }
+            } else {
+                Toast.makeText(context, R.string.logcat_launch_error, Toast.LENGTH_LONG).show();
             }
         }
         return true;
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         return null;
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         return null;
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
         return null;
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         return 0;
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         return 0;
     }
 

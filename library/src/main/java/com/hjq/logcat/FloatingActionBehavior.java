@@ -3,6 +3,7 @@ package com.hjq.logcat;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -10,7 +11,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
-
 import java.util.List;
 
 /**
@@ -27,6 +27,7 @@ public final class FloatingActionBehavior extends CoordinatorLayout.Behavior<Vie
         super();
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) {
         return dependency instanceof Snackbar.SnackbarLayout;
@@ -50,7 +51,7 @@ public final class FloatingActionBehavior extends CoordinatorLayout.Behavior<Vie
         float translationY = this.getTranslationY(parent, child);
         if (translationY != this.mTranslationY) {
             ViewCompat.animate(child).cancel();
-            if (Math.abs(translationY - this.mTranslationY) == (float) dependency.getHeight()) {
+            if (Math.abs(translationY - this.mTranslationY) == dependency.getHeight()) {
                 ViewCompat.animate(child).translationY(translationY);
             } else {
                 child.setTranslationY(translationY);
@@ -60,6 +61,7 @@ public final class FloatingActionBehavior extends CoordinatorLayout.Behavior<Vie
         }
     }
 
+    @SuppressLint("RestrictedApi")
     private float getTranslationY(CoordinatorLayout parent, View child) {
         float minOffset = 0.0F;
         List<?> dependencies = parent.getDependencies(child);
@@ -68,7 +70,7 @@ public final class FloatingActionBehavior extends CoordinatorLayout.Behavior<Vie
         for (int z = dependencies.size(); i < z; ++i) {
             View view = (View) dependencies.get(i);
             if (view instanceof Snackbar.SnackbarLayout && parent.doViewsOverlap(child, view)) {
-                minOffset = Math.min(minOffset, view.getTranslationY() - (float) view.getHeight());
+                minOffset = Math.min(minOffset, view.getTranslationY() - view.getHeight());
             }
         }
 
@@ -95,17 +97,14 @@ public final class FloatingActionBehavior extends CoordinatorLayout.Behavior<Vie
             mAnimFlag = true;
             ValueAnimator animator = ValueAnimator.ofFloat(1, 0);
             animator.setDuration(300);
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float scale = (float) animation.getAnimatedValue();
-                    child.setScaleX(scale);
-                    child.setScaleY(scale);
-                    if (scale != 0) {
-                        return;
-                    }
-                    child.setVisibility(View.INVISIBLE);
+            animator.addUpdateListener(animation -> {
+                float scale = (float) animation.getAnimatedValue();
+                child.setScaleX(scale);
+                child.setScaleY(scale);
+                if (scale != 0) {
+                    return;
                 }
+                child.setVisibility(View.INVISIBLE);
             });
             animator.addListener(new AnimatorListenerAdapter() {
 
@@ -128,13 +127,10 @@ public final class FloatingActionBehavior extends CoordinatorLayout.Behavior<Vie
             child.setVisibility(View.VISIBLE);
             ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
             animator.setDuration(300);
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float scale = (float) animation.getAnimatedValue();
-                    child.setScaleX(scale);
-                    child.setScaleY(scale);
-                }
+            animator.addUpdateListener(animation -> {
+                float scale = (float) animation.getAnimatedValue();
+                child.setScaleX(scale);
+                child.setScaleY(scale);
             });
             animator.addListener(new AnimatorListenerAdapter() {
 

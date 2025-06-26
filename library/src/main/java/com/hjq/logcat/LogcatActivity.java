@@ -146,26 +146,18 @@ public final class LogcatActivity extends AppCompatActivity
         } else {
             delayMillis = 1200;
         }
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // 延迟设置适配器，这样可以提升性能，因为进入这个界面的时候，会频繁添加日志，如果这个时候适配器已经绑定
-                // 那么就会引发 itemView 频繁测试和绘制，这样会很卡，并且还会出现 ANR 的情况
-                mRecyclerView.setAdapter(mAdapter);
-            }
-        }, delayMillis);
 
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mLinearLayoutManager.scrollToPosition(mAdapter.getItemCount() - 1);
-            }
-        }, 1200);
+        // 延迟设置适配器，这样可以提升性能，因为进入这个界面的时候，会频繁添加日志，如果这个时候适配器已经绑定
+        // 那么就会引发 itemView 频繁测试和绘制，这样会很卡，并且还会出现 ANR 的情况
+        mRecyclerView.postDelayed(() -> mRecyclerView.setAdapter(mAdapter), delayMillis);
+
+        mRecyclerView.postDelayed(() ->
+            mLinearLayoutManager.scrollToPosition(mAdapter.getItemCount() - 1), 1200);
     }
 
     private void initSearchCondition() {
         String searchKey = LogcatConfig.getSearchKeyConfig();
-        if (searchKey != null && !"".equals(searchKey)) {
+        if (searchKey != null && !searchKey.isEmpty()) {
             mSearchView.setText(searchKey);
         }
 
@@ -179,7 +171,7 @@ public final class LogcatActivity extends AppCompatActivity
         if (!mGrantedReadLogPermission) {
             try {
                 String uidString = info.getUid();
-                if (uidString != null && !"".equals(uidString)) {
+                if (uidString != null && !uidString.isEmpty()) {
                     int uid = Integer.parseInt(uidString);
                     if (uid != android.os.Process.myUid()) {
                         // 这个日志必须是当前应用打印的
@@ -236,34 +228,31 @@ public final class LogcatActivity extends AppCompatActivity
         } else if (v == mLevelLayout) {
             new ChooseWindow(this)
                     .setList(ARRAY_LOG_LEVEL)
-                    .setListener(new ChooseWindow.OnListener() {
-                        @Override
-                        public void onSelected(int position) {
-                            switch (position) {
-                                case 0:
-                                    setLogLevel(LogLevel.VERBOSE);
-                                    break;
-                                case 1:
-                                    setLogLevel(LogLevel.DEBUG);
-                                    break;
-                                case 2:
-                                    setLogLevel(LogLevel.INFO);
-                                    break;
-                                case 3:
-                                    setLogLevel(LogLevel.WARN);
-                                    break;
-                                case 4:
-                                    setLogLevel(LogLevel.ERROR);
-                                    break;
-                                default:
-                                    break;
-                            }
+                    .setListener(position -> {
+                        switch (position) {
+                            case 0:
+                                setLogLevel(LogLevel.VERBOSE);
+                                break;
+                            case 1:
+                                setLogLevel(LogLevel.DEBUG);
+                                break;
+                            case 2:
+                                setLogLevel(LogLevel.INFO);
+                                break;
+                            case 3:
+                                setLogLevel(LogLevel.WARN);
+                                break;
+                            case 4:
+                                setLogLevel(LogLevel.ERROR);
+                                break;
+                            default:
+                                break;
                         }
                     })
                     .show();
         } else if (v == mIconView) {
             String keyword = mSearchView.getText().toString();
-            if ("".equals(keyword)) {
+            if (keyword.isEmpty()) {
                 showSearchKeyword();
             } else {
                 mSearchView.setText("");
@@ -292,10 +281,14 @@ public final class LogcatActivity extends AppCompatActivity
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        // default implementation ignored
+    }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        // default implementation ignored
+    }
 
     @Override
     public void afterTextChanged(Editable s) {
@@ -315,25 +308,22 @@ public final class LogcatActivity extends AppCompatActivity
     public boolean onItemLongClick(LogcatInfo info, final int position) {
         new ChooseWindow(this)
                 .setList(R.string.logcat_options_copy, R.string.logcat_options_share, R.string.logcat_options_delete, R.string.logcat_options_shield)
-                .setListener(new ChooseWindow.OnListener() {
-                    @Override
-                    public void onSelected(final int location) {
-                        switch (location) {
-                            case 0:
-                                copyLog(position);
-                                break;
-                            case 1:
-                                shareLog(position);
-                                break;
-                            case 2:
-                                mAdapter.removeItem(position);
-                                break;
-                            case 3:
-                                addFilter(mAdapter.getItem(position).getTag());
-                                break;
-                            default:
-                                break;
-                        }
+                .setListener(location -> {
+                    switch (location) {
+                        case 0:
+                            copyLog(position);
+                            break;
+                        case 1:
+                            shareLog(position);
+                            break;
+                        case 2:
+                            mAdapter.removeItem(position);
+                            break;
+                        case 3:
+                            addFilter(mAdapter.getItem(position).getTag());
+                            break;
+                        default:
+                            break;
                     }
                 })
                 .show();
@@ -425,7 +415,7 @@ public final class LogcatActivity extends AppCompatActivity
 
         String[] list = getResources().getStringArray(R.array.logcat_filter_list);
         for (String tag : list) {
-            if (tag == null || "".equals(tag)) {
+            if (tag == null || tag.isEmpty()) {
                 continue;
             }
             if (mTagFilter.contains(tag)) {
@@ -469,6 +459,7 @@ public final class LogcatActivity extends AppCompatActivity
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onBackPressed() {
         // 清除输入焦点
@@ -520,16 +511,14 @@ public final class LogcatActivity extends AppCompatActivity
         }
         new ChooseWindow(this)
                 .setList(mSearchKeyword)
-                .setListener(new ChooseWindow.OnListener() {
-                    @Override
-                    public void onSelected(final int position) {
-                        mSearchView.setText(mSearchKeyword.get(position));
-                        mSearchView.setSelection(mSearchView.getText().toString().length());
-                    }
+                .setListener(position -> {
+                    mSearchView.setText(mSearchKeyword.get(position));
+                    mSearchView.setSelection(mSearchView.getText().toString().length());
                 })
                 .show();
     }
 
+    @SuppressWarnings("deprecation")
     private void refreshLayout() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             // 沉浸式状态栏只有 Android 4.4 才有的
@@ -590,44 +579,37 @@ public final class LogcatActivity extends AppCompatActivity
     /**
      * 搜索关键字任务
      */
-    private final Runnable mSearchRunnable = new Runnable() {
-        @Override
-        public void run() {
-            String keyword = mSearchView.getText().toString();
-            LogcatConfig.setSearchKeyConfig(keyword);
-            mAdapter.setKeyword(keyword);
-            mLinearLayoutManager.scrollToPosition(mAdapter.getItemCount() - 1);
+    private final Runnable mSearchRunnable = () -> {
+        String keyword = mSearchView.getText().toString();
+        LogcatConfig.setSearchKeyConfig(keyword);
+        mAdapter.setKeyword(keyword);
+        mLinearLayoutManager.scrollToPosition(mAdapter.getItemCount() - 1);
 
-            if (!"".equals(keyword)) {
-                mIconView.setVisibility(View.VISIBLE);
-                mIconView.setImageResource(R.drawable.logcat_ic_empty);
-                return;
-            }
+        if (!keyword.isEmpty()) {
+            mIconView.setVisibility(View.VISIBLE);
+            mIconView.setImageResource(R.drawable.logcat_ic_empty);
+            return;
+        }
 
-            if (!mSearchKeyword.isEmpty()) {
-                mIconView.setVisibility(View.VISIBLE);
-                mIconView.setImageResource(R.drawable.logcat_ic_history);
-            } else {
-                mIconView.setVisibility(View.GONE);
-            }
+        if (!mSearchKeyword.isEmpty()) {
+            mIconView.setVisibility(View.VISIBLE);
+            mIconView.setImageResource(R.drawable.logcat_ic_history);
+        } else {
+            mIconView.setVisibility(View.GONE);
         }
     };
 
     /**
      * 搜索关键字记录任务
      */
-    private final Runnable mSearchKeywordRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            String keyword = mSearchView.getText().toString();
-            if ("".equals(keyword)) {
-                return;
-            }
-            if (mSearchKeyword.contains(keyword)) {
-                return;
-            }
-            mSearchKeyword.add(0, keyword);
+    private final Runnable mSearchKeywordRunnable = () -> {
+        String keyword = mSearchView.getText().toString();
+        if (keyword.isEmpty()) {
+            return;
         }
+        if (mSearchKeyword.contains(keyword)) {
+            return;
+        }
+        mSearchKeyword.add(0, keyword);
     };
 }

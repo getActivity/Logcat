@@ -3,12 +3,17 @@ package com.hjq.logcat;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.Surface;
+import android.view.WindowManager;
 import com.hjq.window.EasyWindow;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -36,9 +41,9 @@ import java.util.Locale;
  */
 final class LogcatUtils {
 
-    private final static String FILE_TYPE = "Logcat";
-    private final static String LOGCAT_TAG_FILTER_FILE = "logcat_tag_filter.txt";
-    private static final Charset CHARSET_UTF_8 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? StandardCharsets.UTF_8 : Charset.forName("UTF-8");
+    private static final String FILE_TYPE = "Logcat";
+    private static final String LOGCAT_TAG_FILTER_FILE = "logcat_tag_filter.txt";
+    private static final Charset CHARSET_UTF_8 = VERSION.SDK_INT >= VERSION_CODES.KITKAT ? StandardCharsets.UTF_8 : Charset.forName("UTF-8");
 
     /**
      * 判断当前是否是竖屏
@@ -50,13 +55,24 @@ final class LogcatUtils {
     /**
      * 判断 Activity 是否反方向旋转了
      */
+    @SuppressWarnings("deprecation")
     static boolean isActivityReverse(Activity activity) {
         // 获取 Activity 旋转的角度
-        int activityRotation;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            activityRotation = activity.getDisplay().getRotation();
+        int activityRotation = Surface.ROTATION_0;
+        if (VERSION.SDK_INT >= VERSION_CODES.R) {
+            Display display = activity.getDisplay();
+            if (display != null) {
+                activityRotation = display.getRotation();
+            }
         } else {
-            activityRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+            WindowManager windowManager = activity.getWindowManager();
+            Display defaultDisplay = null;
+            if (windowManager != null) {
+                defaultDisplay = windowManager.getDefaultDisplay();
+            }
+            if (defaultDisplay != null) {
+                activityRotation = defaultDisplay.getRotation();
+            }
         }
         switch (activityRotation) {
             case Surface.ROTATION_180:
@@ -72,6 +88,7 @@ final class LogcatUtils {
     /**
      * 获取状态栏高度
      */
+    @SuppressWarnings("deprecation")
     static int getStatusBarHeight(Context context) {
         Resources resources = context.getResources();
         int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
@@ -81,6 +98,7 @@ final class LogcatUtils {
     /**
      * 获取清单文件中的 mete 布尔值
      */
+    @Nullable
     static Boolean getMetaBooleanData(Context context, String metaKey) {
         try {
             Bundle metaData = context.getPackageManager().getApplicationInfo(
@@ -88,7 +106,7 @@ final class LogcatUtils {
             if (metaData != null && metaData.containsKey(metaKey)) {
                 return Boolean.parseBoolean(String.valueOf(metaData.get(metaKey)));
             }
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
         return null;
@@ -97,6 +115,7 @@ final class LogcatUtils {
     /**
      * 获取清单文件中的 mete 字符串
      */
+    @Nullable
     static String getMetaStringData(Context context, String metaKey) {
         try {
             Bundle metaData = context.getPackageManager().getApplicationInfo(
@@ -104,7 +123,7 @@ final class LogcatUtils {
             if (metaData != null && metaData.containsKey(metaKey)) {
                 return String.valueOf(metaData.get(metaKey));
             }
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
         return null;
@@ -132,6 +151,9 @@ final class LogcatUtils {
      */
     static File saveLogToFile(Context context, List<LogcatInfo> data) throws IOException {
         File directory = context.getExternalFilesDir(FILE_TYPE);
+        if (directory == null) {
+            throw new IOException("The file does not exist.");
+        }
         if (!directory.isDirectory()) {
             directory.delete();
         }
@@ -169,7 +191,7 @@ final class LogcatUtils {
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), CHARSET_UTF_8));
         String tag;
         while ((tag = reader.readLine()) != null) {
-            if ("".equals(tag)) {
+            if (tag.isEmpty()) {
                 continue;
             }
             if (tagFilter.contains(tag)) {
@@ -179,13 +201,19 @@ final class LogcatUtils {
         }
         try {
             reader.close();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+            // default implementation ignored
+        }
 
         return tagFilter;
     }
 
     static File writeTagFilter(Context context, List<String> tagFilter) throws IOException {
-        File file = new File(context.getExternalFilesDir(FILE_TYPE), LOGCAT_TAG_FILTER_FILE);
+        File directory = context.getExternalFilesDir(FILE_TYPE);
+        if (directory == null) {
+            throw new IOException("The file does not exist.");
+        }
+        File file = new File(directory, LOGCAT_TAG_FILTER_FILE);
         if (tagFilter == null || tagFilter.isEmpty()) {
             return file;
         }

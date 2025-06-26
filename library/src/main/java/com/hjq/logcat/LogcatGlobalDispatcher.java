@@ -3,6 +3,7 @@ package com.hjq.logcat;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 
 /**
@@ -27,13 +28,17 @@ final class LogcatGlobalDispatcher implements Application.ActivityLifecycleCallb
     }
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+    public void onActivityCreated(@NonNull Activity activity, Bundle savedInstanceState) {
+        // default implementation ignored
+    }
 
     @Override
-    public void onActivityStarted(Activity activity) {}
+    public void onActivityStarted(@NonNull Activity activity) {
+        // default implementation ignored
+    }
 
     @Override
-    public void onActivityResumed(Activity activity) {
+    public void onActivityResumed(@NonNull Activity activity) {
         if (!(activity instanceof LogcatActivity)) {
             return;
         }
@@ -41,10 +46,12 @@ final class LogcatGlobalDispatcher implements Application.ActivityLifecycleCallb
     }
 
     @Override
-    public void onActivityPaused(Activity activity) {}
+    public void onActivityPaused(@NonNull Activity activity) {
+        // default implementation ignored
+    }
 
     @Override
-    public void onActivityStopped(Activity activity) {
+    public void onActivityStopped(@NonNull Activity activity) {
         if (!(activity instanceof LogcatActivity)) {
             return;
         }
@@ -52,8 +59,12 @@ final class LogcatGlobalDispatcher implements Application.ActivityLifecycleCallb
     }
 
     @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+        // default implementation ignored
+    }
 
     @Override
-    public void onActivityDestroyed(Activity activity) {}
+    public void onActivityDestroyed(@NonNull Activity activity) {
+        // default implementation ignored
+    }
 }

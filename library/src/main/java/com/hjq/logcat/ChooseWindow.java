@@ -1,6 +1,7 @@
 package com.hjq.logcat;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
@@ -26,6 +27,7 @@ final class ChooseWindow extends EasyWindow<ChooseWindow> implements
     private final ChooseAdapter mAdapter;
     private OnListener mListener;
 
+    @SuppressWarnings("deprecation")
     ChooseWindow(Activity activity) {
         super(activity);
         setContentView(R.layout.logcat_window_choose);
@@ -36,10 +38,12 @@ final class ChooseWindow extends EasyWindow<ChooseWindow> implements
         }
         removeWindowFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
-        ListView listView = findViewById(R.id.lv_choose_list);
         mAdapter = new ChooseAdapter();
-        listView.setAdapter(mAdapter);
-        listView.setOnItemClickListener(this);
+        ListView listView = findViewById(R.id.lv_choose_list);
+        if (listView != null) {
+            listView.setAdapter(mAdapter);
+            listView.setOnItemClickListener(this);
+        }
 
         setOnClickListenerByView(R.id.fl_choose_root, this);
     }
@@ -50,9 +54,13 @@ final class ChooseWindow extends EasyWindow<ChooseWindow> implements
     }
 
     ChooseWindow setList(int... stringIds) {
+        Context context = getContext();
+        if (context == null) {
+            return this;
+        }
         List<String> data = new ArrayList<>();
         for (int stringId : stringIds) {
-            data.add(getContext().getResources().getString(stringId));
+            data.add(context.getResources().getString(stringId));
         }
         return setList(data);
     }

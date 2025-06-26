@@ -1,7 +1,6 @@
 package com.hjq.logcat;
 
 import android.os.SystemClock;
-
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
@@ -22,7 +21,7 @@ import java.util.Set;
 final class LogcatManager {
 
     /** 日志捕捉监听对象 */
-    private static volatile Callback sCallback;
+    private static Callback sCallback;
     /** 是否能获取 uid */
     private static volatile boolean sCanObtainUid;
     /** 日志捕捉标记 */
@@ -192,7 +191,7 @@ final class LogcatManager {
         }
     }
 
-    public interface Callback {
+    interface Callback {
 
         /**
          * 收到日志

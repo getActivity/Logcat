@@ -282,6 +282,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
             return mItemLongClickListener.onItemLongClick(getItem(layoutPosition), layoutPosition);
         }
 
+        @SuppressWarnings("deprecation")
         private void onBindView(LogcatInfo info, int position) {
             String content = info.toString(mContext);
             // suspend all histogram:	Sum: 45.480ms 99% C.I. 0.342us-1624.319us Avg: 196.883us Max: 1880us
@@ -361,7 +362,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
             //  at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:602)
             //  at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1130)
             SpannableString spannable = new SpannableString(content);
-            if (mKeyword != null && mKeyword.length() > 0) {
+            if (mKeyword != null && !mKeyword.isEmpty()) {
                 int index = content.indexOf(mKeyword);
                 if (index == -1) {
                     index = content.toLowerCase().indexOf(mKeyword.toLowerCase());
@@ -474,7 +475,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
     /**
      * RecyclerView 条目点击监听类
      */
-    public interface OnItemClickListener{
+    interface OnItemClickListener {
 
         /**
          * 当 RecyclerView 某个条目被点击时回调
@@ -485,7 +486,7 @@ final class LogcatAdapter extends RecyclerView.Adapter<LogcatAdapter.ViewHolder>
     /**
      * RecyclerView 条目长按监听类
      */
-    public interface OnItemLongClickListener {
+    interface OnItemLongClickListener {
 
         /**
          * 当 RecyclerView 某个条目被长按时回调

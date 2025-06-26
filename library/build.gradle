@@ -10,6 +10,12 @@ android {
         abortOnError false
     }
 
+    // 支持 JDK 1.8 及以上
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
     android.libraryVariants.configureEach { variant ->
         // aar 输出文件名配置
         variant.outputs.configureEach { output ->

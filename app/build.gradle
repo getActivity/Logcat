@@ -7,6 +7,12 @@ android {
         applicationId "com.hjq.logcat.demo"
     }
 
+    // 支持 JDK 1.8 及以上
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
     // Apk 签名的那些事：https://www.jianshu.com/p/a1f8e5896aa2
     signingConfigs {
         config {

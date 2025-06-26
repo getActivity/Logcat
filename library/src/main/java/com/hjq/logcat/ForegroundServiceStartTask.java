@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 /**
  *    author : Android 轮子哥
@@ -19,7 +20,7 @@ final class ForegroundServiceStartTask implements Application.ActivityLifecycleC
     }
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    public void onActivityCreated(@NonNull Activity activity, Bundle savedInstanceState) {
         Intent intent = new Intent(activity, LogcatService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Android 8.0 启动后台 service 出错 IllegalStateException: Not allowed to start service Intent
@@ -88,20 +89,32 @@ final class ForegroundServiceStartTask implements Application.ActivityLifecycleC
     }
 
     @Override
-    public void onActivityStarted(Activity activity) {}
+    public void onActivityStarted(@NonNull Activity activity) {
+        // default implementation ignored
+    }
 
     @Override
-    public void onActivityResumed(Activity activity) {}
+    public void onActivityResumed(@NonNull Activity activity) {
+        // default implementation ignored
+    }
 
     @Override
-    public void onActivityPaused(Activity activity) {}
+    public void onActivityPaused(@NonNull Activity activity) {
+        // default implementation ignored
+    }
 
     @Override
-    public void onActivityStopped(Activity activity) {}
+    public void onActivityStopped(@NonNull Activity activity) {
+        // default implementation ignored
+    }
 
     @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+        // default implementation ignored
+    }
 
     @Override
-    public void onActivityDestroyed(Activity activity) {}
+    public void onActivityDestroyed(@NonNull Activity activity) {
+        // default implementation ignored
+    }
 }
