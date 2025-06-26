@@ -76,7 +76,7 @@ android.enableJetifier = true
 
 #### compileSdk 版本要求
 
-* 如果项目的 `compileSdkVersion` 小于 29，则需要先升级成 29
+* 如果项目的 `compileSdkVersion` 小于 34，则需要先升级成 34
 
 ```groovy
 android {
