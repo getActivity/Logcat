@@ -38,12 +38,11 @@ final class LogcatWindow extends EasyWindow<LogcatWindow> implements OnWindowVie
         setContentView(imageView);
 
         int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 45, context.getResources().getDisplayMetrics());
-        setWidth(size);
-        setHeight(size);
+        setWindowSize(size, size);
 
-        setAnimStyle(android.R.style.Animation_Toast);
+        setWindowAnim(android.R.style.Animation_Toast);
         setWindowDraggableRule(new SpringBackWindowDraggableRule());
-        setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+        setWindowLocation(Gravity.END | Gravity.CENTER_VERTICAL, 0, 0);
         setOnClickListenerByView(android.R.id.icon, this);
     }
 

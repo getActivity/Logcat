@@ -31,7 +31,7 @@ final class ChooseWindow extends EasyWindow<ChooseWindow> implements
     ChooseWindow(Activity activity) {
         super(activity);
         setContentView(R.layout.logcat_window_choose);
-        setGravity(Gravity.CENTER);
+        setWindowLocation(Gravity.CENTER, 0, 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // 设置沉浸式状态栏
             addWindowFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
