@@ -4,7 +4,7 @@
 
 * 项目地址：[Github](https://github.com/getActivity/Logcat)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/Logcat/releases/download/12.2/Logcat.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/Logcat/releases/download/12.3/Logcat.apk)
 
 ![](picture/demo_code.png)
 
@@ -59,7 +59,7 @@ android {
 
 dependencies {
     // 日志调试框架：https://github.com/getActivity/Logcat
-    debugImplementation 'com.github.getActivity:Logcat:12.2'
+    debugImplementation 'com.github.getActivity:Logcat:12.3'
 }
 ```
 
