@@ -140,8 +140,8 @@ final class LogcatUtils {
         EasyWindow.with(activity)
                 .setContentView(R.layout.logcat_window_toast)
                 .setWindowDuration(3000)
-                .setGravity(Gravity.CENTER)
-                .setAnimStyle(android.R.style.Animation_Toast)
+                .setWindowLocation(Gravity.CENTER, 0, 0)
+                .setWindowAnim(android.R.style.Animation_Toast)
                 .setTextByTextView(android.R.id.message, text)
                 .show();
     }

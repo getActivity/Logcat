@@ -42,7 +42,7 @@ final class LogcatGlobalDispatcher implements Application.ActivityLifecycleCallb
         if (!(activity instanceof LogcatActivity)) {
             return;
         }
-        mLogcatWindow.setWindowVisibility(View.GONE);
+        mLogcatWindow.setWindowViewVisibility(View.GONE);
     }
 
     @Override
@@ -55,7 +55,7 @@ final class LogcatGlobalDispatcher implements Application.ActivityLifecycleCallb
         if (!(activity instanceof LogcatActivity)) {
             return;
         }
-        mLogcatWindow.setWindowVisibility(View.VISIBLE);
+        mLogcatWindow.setWindowViewVisibility(View.VISIBLE);
     }
 
     @Override
