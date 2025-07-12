@@ -88,6 +88,16 @@ android {
 
 * 如果项目的 `compileSdkVersion` 大于等于 34，则不需要修改此配置
 
+#### 编译报错处理
+
+* 如果你的项目在引用框架依赖之后，出现以下的编译报错
+
+```text
+AAPT: error: unexpected element <property> found in <manifest><application><service>.
+```
+
+* 则证明是项目使用的 `Gradle` 及 `Android Gradle Plugin` 版本太低导致的，请将 `Gradle` 升级到 `gradle-7.4-all` 及以上版本，并将 `Android Gradle Plugin` 升级到 `7.1.0` 及以上版本
+
 #### 使用方式
 
 * 无需调用，直接运行，然后授予悬浮窗权限即可
